@@ -6,15 +6,14 @@ PACK_HEX = packihx.exe
 
 #######################################################
 
-TARGET = blink
+TARGET = pwm_interrupt
 
 CFLAGS = -V -mmcs51 --debug --model-small --nostdlib --std-sdcc11 -DFREQ_SYS=16000000
 LFLAGS = $(CFLAGS)
 
 # Note: Target name must be the same as the first filename...
 C_FILES = \
-	blink.c \
-	../../public/debug.c
+	pwm_interrupt.c
 
 RELS := $(C_FILES:.c=.rel)
 
@@ -23,12 +22,9 @@ print-%  : ; @echo $* = $($*)
 %.rel : %.c
 	$(CC) -c $(CFLAGS) $<
 
-# Note: SDCC will dump all of the temporary files into this one, so strip the paths from RELS
-# For now, get around this by stripping the paths off of the RELS list.
-
 $(TARGET).ihx: $(RELS)
-	$(CC) $(notdir $(RELS))
-
+	$(CC) $(RELS)
+	
 $(TARGET).hex: $(TARGET).ihx
 	$(PACK_HEX) $(TARGET).ihx > $(TARGET).hex
 
@@ -36,14 +32,14 @@ all: $(TARGET).hex
 
 clean:
 	rm -f \
-	$(RELS:.rel=.asm) \
-	$(RELS:.rel=.lk) \
-	$(RELS:.rel=.map) \
-	$(RELS:.rel=.lst) \
-	$(RELS:.rel=.mem) \
-	$(RELS:.rel=.rel) \
-	$(RELS:.rel=.rst) \
-	$(RELS:.rel=.sym) \
-	$(RELS:.rel=.ihx) \
-	$(RELS:.rel=.adb) \
+	$(C_FILES:.c=.asm) \
+	$(C_FILES:.c=.lk) \
+	$(C_FILES:.c=.map) \
+	$(C_FILES:.c=.lst) \
+	$(C_FILES:.c=.mem) \
+	$(C_FILES:.c=.rel) \
+	$(C_FILES:.c=.rst) \
+	$(C_FILES:.c=.sym) \
+	$(C_FILES:.c=.ihx) \
+	$(C_FILES:.c=.adb) \
 	$(TARGET).hex

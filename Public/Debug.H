@@ -1,46 +1,33 @@
-/* µ÷ÊÔ */
-/* Ìá¹©printf×Ó³ÌĞòºÍÑÓÊ±º¯Êı */
+ï»¿/* è°ƒè¯• */
+/* æä¾›printfå­ç¨‹åºå’Œå»¶æ—¶å‡½æ•° */
 
-#ifndef	__DEBUG_H__
-#define __DEBUG_H__
+#pragma once
 
-//¶¨Òåº¯Êı·µ»ØÖµ
-#ifndef  SUCCESS
-#define  SUCCESS  0
-#endif
-#ifndef  FAIL
-#define  FAIL    0xFF
-#endif
-
-//¶¨Òå¶¨Ê±Æ÷ÆğÊ¼
-#ifndef  START
-#define  START  1
-#endif
-#ifndef  STOP
-#define  STOP    0
-#endif
-
-#ifndef  DE_PRINTF
-#define  DE_PRINTF     0
-#endif
-#define	 FREQ_SYS	     12000000	         //ÏµÍ³Ö÷Æµ12MHz
 #ifndef  UART0_BUAD
 #define  UART0_BUAD    57600
+#endif
+
+#ifndef UART1_BAUD
 #define  UART1_BUAD    57600
 #endif
 
-void	CfgFsys( );                        //CH554Ê±ÖÓÑ¡ÔñºÍÅäÖÃ
-void	mDelayuS( UINT16 n );              // ÒÔuSÎªµ¥Î»ÑÓÊ±
-void	mDelaymS( UINT16 n );              // ÒÔmSÎªµ¥Î»ÑÓÊ±
-void  CH554UART0Alter();                 //CH554´®¿Ú0Òı½ÅÓ³Éäµ½P0.2/P0.3
-void	mInitSTDIO( );                      //T1×÷Îª²¨ÌØÂÊ·¢ÉúÆ÷
-UINT8 CH554UART0RcvByte( );              //CH554 UART0²éÑ¯·½Ê½½ÓÊÕÒ»¸ö×Ö½Ú
-void  CH554UART0SendByte(UINT8 SendDat); //CH554UART0·¢ËÍÒ»¸ö×Ö½Ú
+void	CfgFsys( );                        //CH554æ—¶é’Ÿé€‰æ‹©å’Œé…ç½®
+
+#ifdef NOT_FINISHED
+
+void	mDelayuS( UINT16 n );              // ä»¥uSä¸ºå•ä½å»¶æ—¶
+void	mDelaymS( UINT16 n );              // ä»¥mSä¸ºå•ä½å»¶æ—¶
+
+void  CH554UART0Alter();                 //CH554ä¸²å£0å¼•è„šæ˜ å°„åˆ°P0.2/P0.3
+void	mInitSTDIO( );                      //T1ä½œä¸ºæ³¢ç‰¹ç‡å‘ç”Ÿå™¨
+UINT8 CH554UART0RcvByte( );              //CH554 UART0æŸ¥è¯¢æ–¹å¼æ¥æ”¶ä¸€ä¸ªå­—èŠ‚
+void  CH554UART0SendByte(UINT8 SendDat); //CH554UART0å‘é€ä¸€ä¸ªå­—èŠ‚
 
 void	UART1Setup( );                     //
-UINT8 CH554UART1RcvByte( );              //CH554 UART1²éÑ¯·½Ê½½ÓÊÕÒ»¸ö×Ö½Ú
-void  CH554UART1SendByte(UINT8 SendDat); //CH554UART1·¢ËÍÒ»¸ö×Ö½Ú
+UINT8 CH554UART1RcvByte( );              //CH554 UART1æŸ¥è¯¢æ–¹å¼æ¥æ”¶ä¸€ä¸ªå­—èŠ‚
+void  CH554UART1SendByte(UINT8 SendDat); //CH554UART1å‘é€ä¸€ä¸ªå­—èŠ‚
 
-void CH554WDTModeSelect(UINT8 mode);     //CH554¿´ÃÅ¹·Ä£Ê½ÉèÖÃ 
-void CH554WDTFeed(UINT8 tim);            //CH554¿´ÃÅ¹·Î¹¹·
+void CH554WDTModeSelect(UINT8 mode);     //CH554çœ‹é—¨ç‹—æ¨¡å¼è®¾ç½® 
+void CH554WDTFeed(UINT8 tim);            //CH554çœ‹é—¨ç‹—å–‚ç‹—
+
 #endif

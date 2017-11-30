@@ -24,3 +24,7 @@ extern void  PWMInterruptEnable();                                            //
 #define PWM2OutPolarHighAct()(PWM_CTRL &= ~bPWM2_POLAR)                       //PWM2输出默认低，高有效  
 #define PWM1OutPolarLowAct() (PWM_CTRL |= bPWM1_POLAR)                        //PWM1输出默认高，低有效                         
 #define PWM2OutPolarLowAct() (PWM_CTRL |= bPWM2_POLAR)                        //PWM2输出默认高，低有效   
+
+//PWM中断使能
+#define PWMInterruptEnable() {PWM_CTRL |= bPWM_IF_END | bPWM_IE_END; IE_PWMX = 1;}
+#define PWMInterruptDisable() {IE_PWMX = 0;}
