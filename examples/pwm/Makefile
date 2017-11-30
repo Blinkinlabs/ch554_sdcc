@@ -6,14 +6,14 @@ PACK_HEX = packihx.exe
 
 #######################################################
 
-TARGET = blink
+TARGET = pwm
 
 CFLAGS = -V -mmcs51 --debug --model-small --nostdlib --std-sdcc11 -DFREQ_SYS=16000000
 LFLAGS = $(CFLAGS)
 
 # Note: Target name must be the same as the first filename...
 C_FILES = \
-	blink.c
+	pwm.c
 
 RELS := $(C_FILES:.c=.rel)
 
