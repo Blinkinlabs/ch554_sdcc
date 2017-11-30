@@ -10,6 +10,8 @@
                      看门狗初始化										 
 *******************************************************************************/
 
+#include <stdint.h>
+
 #include "ch554.h"
 #include "debug.h"
 
@@ -55,7 +57,7 @@ void	CfgFsys( )
 	SAFE_MOD = 0x00;
 }
 
-#ifdef NOT_FINISHED
+
 
 /*******************************************************************************
 * Function Name  : mDelayus(UNIT16 n)
@@ -64,7 +66,7 @@ void	CfgFsys( )
 * Output         : None
 * Return         : None
 *******************************************************************************/ 
-void	mDelayuS( UINT16 n )  // 以uS为单位延时
+void	mDelayuS( uint16_t n )  // 以uS为单位延时
 {
 #ifdef	FREQ_SYS
 #if		FREQ_SYS <= 6000000
@@ -122,7 +124,7 @@ void	mDelayuS( UINT16 n )  // 以uS为单位延时
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void	mDelaymS( UINT16 n )                                                  // 以mS为单位延时
+void	mDelaymS( uint16_t n )                                                  // 以mS为单位延时
 {
 	while ( n ) {
 #ifdef	DELAY_MS_HW
@@ -135,6 +137,7 @@ void	mDelaymS( UINT16 n )                                                  // �
 	}
 }                                         
 
+#ifdef NOT_FINISHED
 
 /*******************************************************************************
 * Function Name  : CH554UART0Alter()
@@ -158,8 +161,8 @@ void CH554UART0Alter()
 *******************************************************************************/
 void	mInitSTDIO( )
 {
-    UINT32 x;
-    UINT8 x2; 
+    uint32_t x;
+    uint8_t x2;
 
     SM0 = 0;
     SM1 = 1;
@@ -188,7 +191,7 @@ void	mInitSTDIO( )
 * Output         : None
 * Return         : SBUF
 *******************************************************************************/
-UINT8  CH554UART0RcvByte( )
+uint8_t  CH554UART0RcvByte( )
 {
     while(RI == 0);                                                            //查询接收，中断方式可不用
     RI = 0;
@@ -196,13 +199,13 @@ UINT8  CH554UART0RcvByte( )
 }
 
 /*******************************************************************************
-* Function Name  : CH554UART0SendByte(UINT8 SendDat)
+* Function Name  : CH554UART0SendByte(uint8_t SendDat)
 * Description    : CH554UART0发送一个字节
-* Input          : UINT8 SendDat；要发送的数据
+* Input          : uint8_t SendDat；要发送的数据
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void CH554UART0SendByte(UINT8 SendDat)
+void CH554UART0SendByte(uint8_t SendDat)
 {
 	SBUF = SendDat;                                                              //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
 	while(TI ==0);
@@ -231,7 +234,7 @@ void	UART1Setup( )
 * Output         : None
 * Return         : SBUF
 *******************************************************************************/
-UINT8  CH554UART1RcvByte( )
+uint8_t  CH554UART1RcvByte( )
 {
     while(U1RI == 0);                                                           //查询接收，中断方式可不用
     U1RI = 0;
@@ -239,13 +242,13 @@ UINT8  CH554UART1RcvByte( )
 }
 
 /*******************************************************************************
-* Function Name  : CH554UART1SendByte(UINT8 SendDat)
+* Function Name  : CH554UART1SendByte(uint8_t SendDat)
 * Description    : CH554UART1发送一个字节
-* Input          : UINT8 SendDat；要发送的数据
+* Input          : uint8_t SendDat；要发送的数据
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void CH554UART1SendByte(UINT8 SendDat)
+void CH554UART1SendByte(uint8_t SendDat)
 {
 	SBUF1 = SendDat;                                                             //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
 	while(U1TI ==0);
@@ -253,15 +256,15 @@ void CH554UART1SendByte(UINT8 SendDat)
 }
 
 /*******************************************************************************
-* Function Name  : CH554WDTModeSelect(UINT8 mode)
+* Function Name  : CH554WDTModeSelect(uint8_t mode)
 * Description    : CH554看门狗模式选择
-* Input          : UINT8 mode 
+* Input          : uint8_t mode
                    0  timer
                    1  watchDog
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void CH554WDTModeSelect(UINT8 mode)
+void CH554WDTModeSelect(uint8_t mode)
 {
    SAFE_MOD = 0x55;
    SAFE_MOD = 0xaa;                                                             //进入安全模式
@@ -274,15 +277,15 @@ void CH554WDTModeSelect(UINT8 mode)
 }
 
 /*******************************************************************************
-* Function Name  : CH554WDTFeed(UINT8 tim)
+* Function Name  : CH554WDTFeed(uint8_t tim)
 * Description    : CH554看门狗定时时间设置
-* Input          : UINT8 tim 看门狗复位时间设置
+* Input          : uint8_t tim 看门狗复位时间设置
                    00H(6MHz)=2.8s
                    80H(6MHz)=1.4s
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void CH554WDTFeed(UINT8 tim)
+void CH554WDTFeed(uint8_t tim)
 {
    WDOG_COUNT = tim;                                                             //看门狗计数器赋值	
 }

@@ -19,7 +19,7 @@ void main() {
     P1_DIR_PU = P1_DIR_PU |	(1<<LED_PIN);
 
     while (1) {
-        for(i = 0; i < 65535; i++) {}
+    	mDelaymS(100);
         LED = !LED;
     }
 }
