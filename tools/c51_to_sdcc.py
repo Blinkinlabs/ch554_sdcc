@@ -66,7 +66,7 @@ with open(inputFileName) as inputFile:
 			# Note that we need to have already seen the address for the SFR that this bit is in,
 			# so that it can be substituted into the output.
 
-			sbitLine = '   SBIT(' + words[1] + ',\t' + sfrAddresses[words[3].split('^')[0]] + ', ' + words[3].split('^')[1] + ');'
+			sbitLine = '   SBIT(' + words[1] + ',\t' + sfrAddresses[words[3].split('^')[0]] + ', ' + words[3].split('^')[1].rstrip(';') + ');'
 			sbitLine += '\t' + ' '.join(words[4:])
 
 			outputFile.write(sbitLine + '\n')
