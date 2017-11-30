@@ -5,18 +5,17 @@
 *.autosave
 
 # GNU/Make
-*/*.hex
-/*.elf
-*/*.o
-*/*.d
-*/*.i
-*/*.ii
 */*.s
-*/*.dfu
 
-# C51 files
-*.INC
-*.OBJ
-*.LST
-*.MAP
+# SDCC
+*.adb
 *.hex
+*.lst
+*.map
+*.asm
+*.ihx
+*.lk
+*.mem
+*.rel
+*.rst
+*.sym
