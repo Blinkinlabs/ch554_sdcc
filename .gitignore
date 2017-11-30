@@ -1,0 +1,22 @@
+# General temp files
+*.DS_Store
+*.swp
+*.lck
+*.autosave
+
+# GNU/Make
+*/*.hex
+/*.elf
+*/*.o
+*/*.d
+*/*.i
+*/*.ii
+*/*.s
+*/*.dfu
+
+# C51 files
+*.INC
+*.OBJ
+*.LST
+*.MAP
+*.hex
