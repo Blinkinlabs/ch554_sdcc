@@ -10,7 +10,7 @@ ifndef $(FREQ_SYS)
 FREQ_SYS = 12000000
 endif
 
-CFLAGS = -V -mmcs51 --debug --model-small --nostdlib --std-sdcc11 -DFREQ_SYS=$(FREQ_SYS)
+CFLAGS = -V -mmcs51 --debug --model-small --nostdlib --std-sdcc11 -DFREQ_SYS=$(FREQ_SYS) --xram-size 0x400 --code-size 0x37FF
 LFLAGS = $(CFLAGS)
 
 RELS := $(C_FILES:.c=.rel)
@@ -24,7 +24,7 @@ print-%  : ; @echo $* = $($*)
 # For now, get around this by stripping the paths off of the RELS list.
 
 $(TARGET).ihx: $(RELS)
-	$(CC) $(notdir $(RELS))
+	$(CC) $(notdir $(RELS)) -o $(TARGET).ihx
 
 $(TARGET).hex: $(TARGET).ihx
 	$(PACK_HEX) $(TARGET).ihx > $(TARGET).hex
@@ -34,13 +34,14 @@ all: $(TARGET).hex
 clean:
 	rm -f \
 	$(notdir $(RELS:.rel=.asm)) \
-	$(notdir $(RELS:.rel=.lk)) \
-	$(notdir $(RELS:.rel=.map)) \
 	$(notdir $(RELS:.rel=.lst)) \
 	$(notdir $(RELS:.rel=.mem)) \
 	$(notdir $(RELS:.rel=.rel)) \
 	$(notdir $(RELS:.rel=.rst)) \
 	$(notdir $(RELS:.rel=.sym)) \
-	$(notdir $(RELS:.rel=.ihx)) \
 	$(notdir $(RELS:.rel=.adb)) \
+	$(TARGET).lk \
+	$(TARGET).map \
+	$(TARGET).mem \
+	$(TARGET).ihx \
 	$(TARGET).hex

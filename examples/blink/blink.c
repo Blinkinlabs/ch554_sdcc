@@ -2,15 +2,13 @@
 
 #include <stdint.h>
 
-#include "../../public/ch554.h"
-#include "../../public/debug.h"
+#include "../../include/ch554.h"
+#include "../../include/debug.h"
 
 #define LED_PIN 7
 SBIT(LED, 0x90, LED_PIN);
 
 void main() {
-    uint16_t i;
-
     CfgFsys();
 
     // Configure pin 1.6 as GPIO output

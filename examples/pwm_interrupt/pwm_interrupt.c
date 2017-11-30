@@ -1,8 +1,10 @@
 // Use the PWM interrupt to blink an LED connected to pin 1.7
 
-#include "../../public/ch554.h"
-#include "../../public/pwm.h"
-#include "../../public/debug.h"
+#include <stdint.h>
+
+#include "../../include/ch554.h"
+#include "../../include/pwm.h"
+#include "../../include/debug.h"
 
 #define LED1_PIN 7
 SBIT(LED1, 0x90, LED1_PIN);
