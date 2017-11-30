@@ -1,49 +1,8 @@
-#######################################################
-
-# toolchain
-CC = sdcc.exe
-PACK_HEX = packihx.exe
-
-#######################################################
-
 TARGET = blink
-
-CFLAGS = -V -mmcs51 --debug --model-small --nostdlib --std-sdcc11 -DFREQ_SYS=16000000
-LFLAGS = $(CFLAGS)
 
 # Note: Target name must be the same as the first filename...
 C_FILES = \
 	blink.c \
 	../../public/debug.c
 
-RELS := $(C_FILES:.c=.rel)
-
-print-%  : ; @echo $* = $($*)
-
-%.rel : %.c
-	$(CC) -c $(CFLAGS) $<
-
-# Note: SDCC will dump all of the temporary files into this one, so strip the paths from RELS
-# For now, get around this by stripping the paths off of the RELS list.
-
-$(TARGET).ihx: $(RELS)
-	$(CC) $(notdir $(RELS))
-
-$(TARGET).hex: $(TARGET).ihx
-	$(PACK_HEX) $(TARGET).ihx > $(TARGET).hex
-
-all: $(TARGET).hex
-
-clean:
-	rm -f \
-	$(RELS:.rel=.asm) \
-	$(RELS:.rel=.lk) \
-	$(RELS:.rel=.map) \
-	$(RELS:.rel=.lst) \
-	$(RELS:.rel=.mem) \
-	$(RELS:.rel=.rel) \
-	$(RELS:.rel=.rst) \
-	$(RELS:.rel=.sym) \
-	$(RELS:.rel=.ihx) \
-	$(RELS:.rel=.adb) \
-	$(TARGET).hex
+include ../Makefile.include
