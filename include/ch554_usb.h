@@ -162,6 +162,9 @@ Header file for CH554 microcontrollers.
 #ifndef DEFAULT_ENDP0_SIZE
 #define DEFAULT_ENDP0_SIZE      8       /* default maximum packet size for endpoint 0 */
 #endif
+#ifndef DEFAULT_ENDP1_SIZE
+#define DEFAULT_ENDP1_SIZE      8       /* default maximum packet size for endpoint 1 */
+#endif
 #ifndef MAX_PACKET_SIZE
 #define MAX_PACKET_SIZE         64      /* maximum packet size */
 #endif

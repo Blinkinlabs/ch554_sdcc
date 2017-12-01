@@ -14,7 +14,7 @@
 #include <debug.h>
 
 __xdata __at (0x0000) uint8_t  Ep0Buffer[DEFAULT_ENDP0_SIZE];                                 //端点0 OUT&IN缓冲区，必须是偶地址
-__xdata __at (0x0040) uint8_t  Ep1Buffer[8];                                                  //端点1上传缓冲区
+__xdata __at (0x0040) uint8_t  Ep1Buffer[DEFAULT_ENDP1_SIZE];                                 //端点1上传缓冲区
 __xdata __at (0x0080) uint8_t  Ep2Buffer[2*MAX_PACKET_SIZE];                                  //端点2 IN & OUT缓冲区,必须是偶地址
 
 uint16_t SetupLen;
@@ -127,15 +127,14 @@ void USBDeviceIntCfg()
 *******************************************************************************/
 void USBDeviceEndPointCfg()
 {
-//TODO
-//    UEP1_DMA = Ep1Buffer;                                                      //端点1 发送数据传输地址
-//    UEP2_DMA = Ep2Buffer;                                                      //端点2 IN数据传输地址
+    // TODO: Is casting the right thing here? What about endianness?
+    UEP1_DMA = (uint16_t) Ep1Buffer;                                                      //端点1 发送数据传输地址
+    UEP2_DMA = (uint16_t) Ep2Buffer;                                                      //端点2 IN数据传输地址
     UEP2_3_MOD = 0xCC;                                                         //端点2/3 单缓冲收发使能
     UEP2_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_ACK;                 //端点2自动翻转同步标志位，IN事务返回NAK，OUT返回ACK
 
     UEP1_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK;                                 //端点1自动翻转同步标志位，IN事务返回NAK
-// TODO
-//    UEP0_DMA = Ep0Buffer;                                                      //端点0数据传输地址
+    UEP0_DMA = (uint16_t) Ep0Buffer;                                                      //端点0数据传输地址
     UEP4_1_MOD = 0X40;                                                         //端点1上传缓冲区；端点0单64字节收发缓冲区
     UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;                                 //手动翻转，OUT事务返回ACK，IN事务返回NAK
 }
