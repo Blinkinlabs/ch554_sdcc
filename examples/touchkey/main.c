@@ -7,9 +7,9 @@
 *******************************************************************************/
 #include <stdint.h>
 
-#include "../../include/ch554.h"
-#include "../../include/debug.h"
-#include "../../include/touchkey.h"
+#include <ch554.h>
+#include <debug.h>
+#include <touchkey.h>
 
 void main()
 {

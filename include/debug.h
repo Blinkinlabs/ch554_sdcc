@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #ifndef  UART0_BUAD
 #define  UART0_BUAD    9600
 #endif
