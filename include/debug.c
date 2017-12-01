@@ -137,6 +137,21 @@ void	mDelaymS( uint16_t n )                                                  // 
 	}
 }                                         
 
+//TODO
+void  CH554UART0Alter() {}
+void	mInitSTDIO( ) {}
+uint8_t CH554UART0RcvByte( ) { return 0;}
+void  CH554UART0SendByte(uint8_t SendDat) {}
+
+void	UART1Setup( ) {}
+uint8_t CH554UART1RcvByte( ) {return 0;}
+void  CH554UART1SendByte(uint8_t SendDat) {}
+
+void CH554WDTModeSelect(uint8_t mode) {}
+void CH554WDTFeed(uint8_t tim) {}
+
+
+
 #ifdef NOT_FINISHED
 
 /*******************************************************************************

@@ -2,6 +2,8 @@
 
 import argparse
 import shutil
+import re
+from collections import OrderedDict
 
 parser = argparse.ArgumentParser(description='Convert a Keil C51 format platform file into SDCC format')
 parser.add_argument('source', help='Source filename')
@@ -15,10 +17,56 @@ outputFileName = args.destination
 
 outputFile = open(outputFileName, 'w')
 
+
+# Track SFR addresses, in order to inject them into SBIT definitions
 sfrAddresses = {}
+
+
+replacements = OrderedDict([
+	('UINT8X',	'__xdata uint8_t'),
+	('UINT16X',	'__xdata uint16_t'),
+	('UINT24X',	'__xdata uuint24_t'),
+	('UINT32X',	'__xdata uuint32_t'),
+	('INT8X',	'__xdata uint8_t'),
+	('INT16X',	'__xdata uint16_t'),
+	('INT24X',	'__xdata uint24_t'),
+	('INT32X',	'__xdata uint32_t'),
+
+	('UINT8C',	'__code uint8_t'),
+	('UINT16C',	'__code uint16_t'),
+	('UINT24C',	'__code uuint24_t'),
+	('UINT32C',	'__code uuint32_t'),
+	('INT8C',	'__code uint8_t'),
+	('INT16C',	'__code uint16_t'),
+	('INT24C',	'__code uint24_t'),
+	('INT32C',	'__code uint32_t'),
+
+	('UINT8I',	'__idata uint8_t'),
+	('UINT16I',	'__idata uint16_t'),
+	('UINT24I',	'__idata uuint24_t'),
+	('UINT32I',	'__idata uuint32_t'),
+	('INT8I',	'__idata uint8_t'),
+	('INT16I',	'__idata uint16_t'),
+	('INT24I',	'__idata uint24_t'),
+	('INT32I',	'__idata uint32_t'),
+
+	('UINT8',	'uint8_t'),
+	('UINT16',	'uint16_t'),
+	('UINT24',	'uint24_t'),
+	('UINT32',	'uint32_t'),
+	('INT8',	'int8_t'),
+	('INT16',	'int16_t'),
+	('INT24',	'int24_t'),
+	('INT32',	'int32_t'),
+])
+
 
 with open(inputFileName) as inputFile:
 	for line in inputFile:
+		# do token replacment
+		for i, j in replacements.iteritems():
+        		line = line.replace(i, j)
+
 		words = line.split()
 
 		if len(words) == 0:
