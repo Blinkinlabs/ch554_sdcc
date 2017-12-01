@@ -137,23 +137,6 @@ void	mDelaymS( uint16_t n )                                                  // 
 	}
 }                                         
 
-//TODO
-void  CH554UART0Alter() {}
-void	mInitSTDIO( ) {}
-uint8_t CH554UART0RcvByte( ) { return 0;}
-void  CH554UART0SendByte(uint8_t SendDat) {}
-
-void	UART1Setup( ) {}
-uint8_t CH554UART1RcvByte( ) {return 0;}
-void  CH554UART1SendByte(uint8_t SendDat) {}
-
-void CH554WDTModeSelect(uint8_t mode) {}
-void CH554WDTFeed(uint8_t tim) {}
-
-
-
-#ifdef NOT_FINISHED
-
 /*******************************************************************************
 * Function Name  : CH554UART0Alter()
 * Description    : CH554串口0引脚映射,串口映射到P0.2和P0.3
@@ -176,8 +159,8 @@ void CH554UART0Alter()
 *******************************************************************************/
 void	mInitSTDIO( )
 {
-    uint32_t x;
-    uint8_t x2;
+    volatile uint32_t x;
+    volatile uint8_t x2;
 
     SM0 = 0;
     SM1 = 1;
@@ -304,5 +287,3 @@ void CH554WDTFeed(uint8_t tim)
 {
    WDOG_COUNT = tim;                                                             //看门狗计数器赋值	
 }
-
-#endif

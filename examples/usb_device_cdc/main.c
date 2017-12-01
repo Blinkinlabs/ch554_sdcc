@@ -19,7 +19,7 @@ __xdata __at (0x0080) uint8_t  Ep2Buffer[2*MAX_PACKET_SIZE];                    
 
 uint16_t SetupLen;
 uint8_t   SetupReq,Count,UsbConfig;
-uint8_t *  pDescr;                                                                //USB配置标志
+const uint8_t *  pDescr;                                                                //USB配置标志
 USB_SETUP_REQ   SetupReqBuf;                                                   //暂存Setup包
 #define UsbSetupBuf     ((PUSB_SETUP_REQ)Ep0Buffer)
 
@@ -549,7 +549,7 @@ void Uart1_ISR(void) __interrupt (INT_NO_UART1)
 //主函数
 main()
 {
-        uint8_t lenth;
+        uint8_t length;
         uint8_t Uart_Timeout = 0;
     CfgFsys( );                                                           //CH559时钟选择配置
     mDelaymS(5);                                                          //修改主频等待内部晶振稳定,必加
@@ -576,26 +576,27 @@ main()
                                 USBByteCount--;
                                 if(USBByteCount==0)
                                         UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK;
+
                         }
                         if(UartByteCount)
                                 Uart_Timeout++;
                         if(!UpPoint2_Busy)   //端点不繁忙（空闲后的第一包数据，只用作触发上传）
                         {
-                                lenth = UartByteCount;
-                                if(lenth>0)
+                                length = UartByteCount;
+                                if(length>0)
                                 {
-                                        if(lenth>39 || Uart_Timeout>100)
+                                        if(length>39 || Uart_Timeout>100)
                                         {
                                                 Uart_Timeout = 0;
-                                                if(Uart_Output_Point+lenth>UART_REV_LEN)
-                                                        lenth = UART_REV_LEN-Uart_Output_Point;
-                                                UartByteCount -= lenth;
+                                                if(Uart_Output_Point+length>UART_REV_LEN)
+                                                        length = UART_REV_LEN-Uart_Output_Point;
+                                                UartByteCount -= length;
                                                 //写上传端点
-                                                memcpy(Ep2Buffer+MAX_PACKET_SIZE,&Receive_Uart_Buf[Uart_Output_Point],lenth);
-                                                Uart_Output_Point+=lenth;
+                                                memcpy(Ep2Buffer+MAX_PACKET_SIZE,&Receive_Uart_Buf[Uart_Output_Point],length);
+                                                Uart_Output_Point+=length;
                                                 if(Uart_Output_Point>=UART_REV_LEN)
                                                         Uart_Output_Point = 0;
-                                                UEP2_T_LEN = lenth;                                                    //预使用发送长度一定要清空
+                                                UEP2_T_LEN = length;                                                    //预使用发送长度一定要清空
                                                 UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;            //应答ACK
                                                 UpPoint2_Busy = 1;
                                         }
