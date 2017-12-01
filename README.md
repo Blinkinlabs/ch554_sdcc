@@ -8,28 +8,29 @@ You'll need a recent version of SDCC, as well as gnu autotools (for make support
 
 # Status
 
-These are the examples included with the original SDK:
+Here is a list of the different peripheral drivers and examples that need to be ported
 
-ADC: not started
-DataFlash
-GPIO
-IAP
-PWM: complete
-SPI: not started
-Timer: not started
-TouchKey: in progress
-Type-C:
-USB\Device: not started
-USB\Host: not started
-USB\U_DISK (host): not started
-S_CDC: not started
-U_DISK: not started
-Compound_Dev: not started
-
-And examples that need to be added:
-UART0/stdlib: not started
-UART1/stdlib: not started
-Watchdog: not started
+| Peripheral | Description | Status |
+| --- | --- | --- |
+| ADC | Analog-to-digital converter | not started |
+| DataFlash | DataFlash (EEPROM) peripheral | not started |
+| GPIO | I/O peripheral example | not started |
+| UART0/stdlib | stdio example using UART0 | not started |
+| UART1/stdlib | stdio example using UART1 | not started |
+| Watchdog: not started |
+| IAP | Jump from user program to the bootloader | not started |
+| PWM | Pulse Width modulation peripheral | complete |
+| SPI | Serial Peripheral Interface | not started |
+| Timer | 8051-style Timers 0 and 1 | not started |
+| Timer2 | Extended Timer 2 | not started |
+| TouchKey | Capacitive touch peripheral | in progress |
+| Type-C | USB C power negotiation peripheral | not started |
+| USB\Device | USB device peripheral: HID (?) profile | not started |
+| S_CDC | USB device peripheral: CDC profile | complete |
+| U_DISK | USB device peripheral: USB disk profile | not started |
+| Compound_Dev | USB device peripheral: compound device example (?) | not started |
+| USB\Host | USB host peripheral: hub (?) example | not started |
+| USB\U_DISK | USB host peripheral: USB disk read/write | not started |
 
 # Examples
 
@@ -50,6 +51,10 @@ Use the PWM hardware as a periodic interrupt source
 ## touchkey
 
 Exercise the capacitive touch hardware
+
+## usb_device_cdc
+
+Emulate a USB-to-Serial converter, as a USB-CDC device.
 
 ## ws2812
 
