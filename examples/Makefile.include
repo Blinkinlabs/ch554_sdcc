@@ -40,6 +40,7 @@ $(TARGET).ihx: $(RELS)
 $(TARGET).hex: $(TARGET).ihx
 	$(PACK_HEX) $(TARGET).ihx > $(TARGET).hex
 
+.DEFAULT_GOAL := all
 all: $(TARGET).hex
 
 clean:
