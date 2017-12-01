@@ -4,11 +4,11 @@
 #pragma once
 
 #ifndef  UART0_BUAD
-#define  UART0_BUAD    57600
+#define  UART0_BUAD    9600
 #endif
 
 #ifndef UART1_BAUD
-#define  UART1_BUAD    57600
+#define  UART1_BUAD    9600
 #endif
 
 void	CfgFsys( );                        //CH554时钟选择和配置

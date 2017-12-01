@@ -1,6 +1,5 @@
 TARGET = usb_device_cdc
 
-
 # Adjust the XRAM location and size to leave space for the USB DMA buffers
 # Buffer layout in XRAM:
 # 0x0000 Ep0Buffer[8]
