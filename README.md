@@ -8,9 +8,9 @@ This is a port of the CH554 SDK, from Keil C51 to SDCC.
 
 You'll need a recent version of SDCC, as well as mingw for make, and likely also git-bash for the bash shell.
 
-[git for windows](https://github.com/git-for-windows/git/releases/download/v2.15.1.windows.2/Git-2.15.1.2-64-bit.exe)
-[SDCC 3.6.0](https://sourceforge.net/projects/sdcc/files/latest/download?source=files)
-[mingw installer](https://downloads.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe)
+* [git for windows](https://github.com/git-for-windows/git/releases/download/v2.15.1.windows.2/Git-2.15.1.2-64-bit.exe)
+* [SDCC 3.6.0](https://sourceforge.net/projects/sdcc/files/latest/download?source=files)
+* [mingw installer](https://downloads.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe)
 
 TODO: How to set up the enviroment to find these bits automatically
 
@@ -136,6 +136,7 @@ Right, we forgot to add the debug.c source file to the Makefile. Update the Make
 
 And re-run make. Everything should be fine:
 
+	$ make
 	sdcc -c -V -mmcs51 --model-small --xram-size 0x0400 --xram-loc 0x0000 --code-size 0x37FF -I../../include -DFREQ_SYS=12000000 ../../include/debug.c
 	+ /usr/bin/sdcpp -nostdinc -Wall -I../../include -DFREQ_SYS=12000000 -obj-ext=.rel -D__SDCC_MODEL_SMALL -D__SDCC_FLOAT_REENT -D__SDCC=3_5_0 -DSDCC=350 -D__SDCC_REVISION=9253 -D__SDCC_mcs51 -D__STDC_NO_COMPLEX__ -D__STDC_NO_THREADS__ -D__STDC_NO_ATOMICS__ -D__STDC_NO_VLA__ -isystem /usr/bin/../share/sdcc/include/mcs51 -isystem /usr/share/sdcc/include/mcs51 -isystem /usr/bin/../share/sdcc/include -isystem /usr/share/sdcc/include  ../../include/debug.c 
 ../../include/debug.c:225: warning 158: overflow in implicit constant conversion
