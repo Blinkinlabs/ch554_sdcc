@@ -10,7 +10,8 @@ ifndef $(FREQ_SYS)
 FREQ_SYS = 12000000
 endif
 
-CFLAGS = -V -mmcs51 --debug --model-small --nostdlib --std-sdcc11 -DFREQ_SYS=$(FREQ_SYS) --xram-size 0x400 --code-size 0x37FF
+CFLAGS = -V -mmcs51 --model-small --xram-size 0x400 --code-size 0x37FF \
+	-I../../include -DFREQ_SYS=$(FREQ_SYS)
 LFLAGS = $(CFLAGS)
 
 RELS := $(C_FILES:.c=.rel)
@@ -24,7 +25,7 @@ print-%  : ; @echo $* = $($*)
 # For now, get around this by stripping the paths off of the RELS list.
 
 $(TARGET).ihx: $(RELS)
-	$(CC) $(notdir $(RELS)) -o $(TARGET).ihx
+	$(CC) $(notdir $(RELS)) $(LFLAGS) -o $(TARGET).ihx
 
 $(TARGET).hex: $(TARGET).ihx
 	$(PACK_HEX) $(TARGET).ihx > $(TARGET).hex

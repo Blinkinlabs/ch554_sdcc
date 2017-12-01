@@ -1,7 +1,7 @@
 // Enable both PWM peripherals, and connect them to their GPIO outputs
 
-#include "../../include/ch554.h"
-#include "../../include/pwm.h"
+#include <ch554.h>
+#include <pwm.h>
 
 void main() {
     SetPWMClk(4);

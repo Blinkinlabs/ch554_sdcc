@@ -1,6 +1,6 @@
 TARGET = pwm
 
 C_FILES = \
-	pwm.c
+	main.c
 
 include ../Makefile.include
