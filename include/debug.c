@@ -169,7 +169,7 @@ void	mInitSTDIO( )
     RCLK = 0;                                                                  //UART0接收时钟
     TCLK = 0;                                                                  //UART0发送时钟
     PCON |= SMOD;
-    x = 10 * FREQ_SYS / UART0_BUAD / 16;                                       //如果更改主频，注意x的值不要溢出                            
+    x = 10 * FREQ_SYS / UART0_BUAD / 16;                                       //如果更改主频，注意x的值不要溢出
     x2 = x % 10;
     x /= 10;
     if ( x2 >= 5 ) x ++;                                                       //四舍五入
@@ -205,9 +205,23 @@ uint8_t  CH554UART0RcvByte( )
 *******************************************************************************/
 void CH554UART0SendByte(uint8_t SendDat)
 {
-	SBUF = SendDat;                                                              //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
-	while(TI ==0);
-	TI = 0;
+        SBUF = SendDat;                                                              //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
+        while(TI ==0);
+        TI = 0;
+}
+
+void putchar(char c)
+{
+    while (!TI) /* assumes UART is initialized */
+    ;
+    TI = 0;
+    SBUF = c;
+}
+
+char getchar() {
+    while(!RI); /* assumes UART is initialized */
+    RI = 0;
+    return SBUF;
 }
 
 /*******************************************************************************
@@ -222,7 +236,7 @@ void	UART1Setup( )
    U1SM0 = 0;                                                                   //UART1选择8位数据位
    U1SMOD = 1;                                                                  //快速模式
    U1REN = 1;                                                                   //使能接收
-   SBAUD1 = 0 - FREQ_SYS/16/UART1_BUAD;
+   SBAUD1 = 256 - FREQ_SYS/16/UART1_BUAD;
 }
 
 /*******************************************************************************
@@ -248,9 +262,9 @@ uint8_t  CH554UART1RcvByte( )
 *******************************************************************************/
 void CH554UART1SendByte(uint8_t SendDat)
 {
-	SBUF1 = SendDat;                                                             //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
-	while(U1TI ==0);
-	U1TI = 1;
+        SBUF1 = SendDat;                                                             //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
+        while(U1TI ==0);
+        U1TI = 1;
 }
 
 /*******************************************************************************
@@ -285,5 +299,5 @@ void CH554WDTModeSelect(uint8_t mode)
 *******************************************************************************/
 void CH554WDTFeed(uint8_t tim)
 {
-   WDOG_COUNT = tim;                                                             //看门狗计数器赋值	
+   WDOG_COUNT = tim;                                                             //看门狗计数器赋值
 }

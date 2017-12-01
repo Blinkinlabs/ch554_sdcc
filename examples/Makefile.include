@@ -21,7 +21,9 @@ endif
 CFLAGS = -V -mmcs51 --model-small \
 	--xram-size $(XRAM_SIZE) --xram-loc $(XRAM_LOC) \
 	--code-size 0x37FF \
-	-I../../include -DFREQ_SYS=$(FREQ_SYS)
+	-I../../include -DFREQ_SYS=$(FREQ_SYS) \
+	$(EXTRA_FLAGS)
+
 LFLAGS = $(CFLAGS)
 
 RELS := $(C_FILES:.c=.rel)
