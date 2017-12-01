@@ -1,6 +1,13 @@
 SUBDIRS = $(shell ls -d */)
 
-all:
-	for dir in $(SUBDIRS) ; do \
-		mingw32-make -C  $$dir ; \
-		done
+.PHONY: $(SUBDIRS)
+
+
+$(SUBDIRS):
+	$(MAKE) -C $@
+
+.DEFAULT_GOAL := all
+all: $(SUBDIRS)
+
+
+print-%  : ; @echo $* = $($*)
