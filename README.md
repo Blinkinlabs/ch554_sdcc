@@ -197,9 +197,9 @@ Contributions are welcome! Please see CONTRIBUTING.md
 
 # References
 
-[Official CH554 SDK (snapshot)](https://github.com/HonghongLu/CH554)
-[SDCC Compiler Users Guide](http://sdcc.sourceforge.net/doc/sdccman.pdf)
-[CH554 manual (Chinese)](https://github.com/HonghongLu/CH554/blob/master/CH554DS1.PDF)
-[CH554 manual (English-ish translation)](https://github.com/Blinkinlabs/ch554_sdcc/blob/master/documentation/CH554%20manual%20english.pdf)
-[CH554 instruction set timings](https://github.com/HonghongLu/CH554/blob/master/official%20ch554%20evt%20pcb/PUB/CH55X%C2%AA%E2%80%9E%C2%B1%E2%80%A1%C3%B7%E2%88%8F%C2%A1%C3%93.PDF)
+* [Official CH554 SDK (snapshot)](https://github.com/HonghongLu/CH554)
+* [SDCC Compiler Users Guide](http://sdcc.sourceforge.net/doc/sdccman.pdf)
+* [CH554 manual (Chinese)](https://github.com/HonghongLu/CH554/blob/master/CH554DS1.PDF)
+* [CH554 manual (English-ish translation)](https://github.com/Blinkinlabs/ch554_sdcc/blob/master/documentation/CH554%20manual%20english.pdf)
+* [CH554 instruction set timings](https://github.com/HonghongLu/CH554/blob/master/official%20ch554%20evt%20pcb/PUB/CH55X%C2%AA%E2%80%9E%C2%B1%E2%80%A1%C3%B7%E2%88%8F%C2%A1%C3%93.PDF)
 
