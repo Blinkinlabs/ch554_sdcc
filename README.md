@@ -173,10 +173,10 @@ Here is a list of the different peripheral drivers and examples that need to be 
 | ADC | Analog-to-digital converter | not started |
 | DataFlash | DataFlash (EEPROM) peripheral | not started |
 | GPIO | I/O peripheral example | not started |
-| UART0/stdlib | stdio example using UART0 | not started |
-| UART1/stdlib | stdio example using UART1 | not started |
+| UART0/stdlib | stdio example using UART0 | in progress |
+| UART1/stdlib | stdio example using UART1 | in progress |
 | Watchdog | Watchdog timer configuration | not started |
-| IAP | Jump from user program to the bootloader | not started |
+| IAP | Jump from user program to the bootloader | complete |
 | PWM | Pulse Width modulation peripheral | complete |
 | SPI | Serial Peripheral Interface | not started |
 | Timer | 8051-style Timers 0 and 1 | not started |
