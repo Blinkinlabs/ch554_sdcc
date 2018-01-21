@@ -3,6 +3,7 @@
 *.swp
 *.lck
 *.autosave
+*~
 
 # GNU/Make
 */*.s
@@ -19,3 +20,4 @@
 *.rel
 *.rst
 *.sym
+*.bin

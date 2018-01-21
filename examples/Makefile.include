@@ -2,7 +2,9 @@
 
 # toolchain
 CC = sdcc
+OBJCOPY = objcopy
 PACK_HEX = packihx
+WCHISP = wchisptool
 
 #######################################################
 
@@ -20,7 +22,7 @@ endif
 
 CFLAGS = -V -mmcs51 --model-small \
 	--xram-size $(XRAM_SIZE) --xram-loc $(XRAM_LOC) \
-	--code-size 0x37FF \
+	--code-size 0x2800 \
 	-I../../include -DFREQ_SYS=$(FREQ_SYS) \
 	$(EXTRA_FLAGS)
 
@@ -42,8 +44,14 @@ $(TARGET).ihx: $(RELS)
 $(TARGET).hex: $(TARGET).ihx
 	$(PACK_HEX) $(TARGET).ihx > $(TARGET).hex
 
+$(TARGET).bin: $(TARGET).ihx
+	$(OBJCOPY) -I ihex -O binary $(TARGET).ihx $(TARGET).bin
+	
+flash: $(TARGET).bin
+	$(WCHISP) -f $(TARGET).bin -g
+
 .DEFAULT_GOAL := all
-all: $(TARGET).hex
+all: $(TARGET).bin
 
 clean:
 	rm -f \
