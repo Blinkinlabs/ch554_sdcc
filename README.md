@@ -1,6 +1,6 @@
 # CH554 software development kit for SDCC [![Build Status](https://travis-ci.org/Blinkinlabs/ch554_sdcc.svg?branch=master)](https://travis-ci.org/Blinkinlabs/ch554_sdcc)
 
-![image](https://github.com/Blinkinlabs/ch554_sdcc/raw/master/documentation/devboad.png)
+![image](https://raw.githubusercontent.com/Blinkinlabs/ch554_sdcc/master/documentation/devboard.png)
 
 This is a port of the CH554 SDK, from Keil C51 to SDCC.
 
