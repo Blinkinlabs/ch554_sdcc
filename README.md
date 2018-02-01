@@ -1,5 +1,7 @@
 # CH554 software development kit for SDCC [![Build Status](https://travis-ci.org/Blinkinlabs/ch554_sdcc.svg?branch=master)](https://travis-ci.org/Blinkinlabs/ch554_sdcc)
 
+![image](https://github.com/Blinkinlabs/ch554_sdcc/raw/master/documentation/devboad.png)
+
 This is a port of the CH554 SDK, from Keil C51 to SDCC.
 
 The CH554 family of microcontrollers is notable because it has both an extremely low cost, USB device and host peripherals, and a preloaded USB bootloader.
