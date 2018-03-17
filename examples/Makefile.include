@@ -47,7 +47,7 @@ $(TARGET).hex: $(TARGET).ihx
 $(TARGET).bin: $(TARGET).ihx
 	$(OBJCOPY) -I ihex -O binary $(TARGET).ihx $(TARGET).bin
 	
-flash: $(TARGET).bin
+flash: $(TARGET).bin pre-flash
 	$(WCHISP) -f $(TARGET).bin -g
 
 .DEFAULT_GOAL := all
