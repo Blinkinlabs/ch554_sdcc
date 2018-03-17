@@ -29,6 +29,10 @@ void i2c_delay()
 
 void i2c_start()
 {
+	I2C_SDAT = 1;
+	I2C_SCLK = 1;
+	i2c_delay();
+	
 	I2C_SDAT = 0;
 	i2c_delay();
 	

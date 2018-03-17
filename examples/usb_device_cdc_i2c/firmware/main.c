@@ -35,7 +35,7 @@ USB_SETUP_REQ   SetupReqBuf;			//暂存Setup包
 uint32_t Baud = 0;
 
 /*设备描述符*/
-__code uint8_t DevDesc[] = {0x12,0x01,0x00,0x02,0x02,0x00,0x00,DEFAULT_ENDP0_SIZE,
+__code uint8_t DevDesc[] = {0x12,0x01,0x10,0x01,0x02,0x00,0x00,DEFAULT_ENDP0_SIZE,
 							0x86,0x1a,0x22,0x57,0x00,0x01,0x01,0x02,
 							0x03,0x01
 						   };
@@ -609,6 +609,8 @@ void uart_poll()
 	static uint8_t i2c_error_no = 0;
 	static uint8_t uart_rx_status = 0;
 	static uint8_t former_data = 0;
+	static uint8_t dontstop = 0;
+	uint8_t i;
 	
 	if(USBByteCount)   //USB接收端点有数据
 	{
@@ -649,6 +651,13 @@ void uart_poll()
 				i2c_error_no = 0;
 				i2c_frame_len = 0;
 			}
+			else if(uart_data == 'R')
+			{ /* Recieve I2C Data: R<AR><LEN> */
+				i2c_frame_rx_len = 0;
+				uart_rx_status = 3;
+				i2c_error_no = 0;
+				i2c_frame_len = 0;								
+			}
 			else if(uart_data == 'T' && former_data == 'A') /* BAN AT commands */
 			{
 				v_uart_puts("OK\r\n");
@@ -664,6 +673,11 @@ void uart_poll()
 		else if(uart_rx_status == 1)
 		{ // 54	03	C0	02	53	
 			i2c_frame_len = uart_data & 0x0f; /* 拿到长度 */
+			if(uart_data & 0x80)
+				dontstop = 1;
+			else
+				dontstop = 0;
+				
 			i2c_start();
 			uart_rx_status = 2;
 		}
@@ -685,8 +699,9 @@ void uart_poll()
 			{
 				if(i2c_error_no == 0)
 				{
-					v_uart_puts("OK \r\n");
-					i2c_stop(); /* 停止I2C */
+					v_uart_puts("OK\r\n");
+					if(dontstop == 0)
+						i2c_stop(); /* 停止I2C */
 				}
 				else
 				{
@@ -702,6 +717,32 @@ void uart_poll()
 				i2c_error_no = 0;
 			}
 			
+		}
+		else if(uart_rx_status == 3)
+		{
+			i2c_start();
+			i2c_write(uart_data); /* 送地址 */
+			i2c_ack = i2c_read_ack();
+			if(i2c_ack != 1)
+			{
+				v_uart_puts("FAIL\r\n");
+				i2c_stop();
+				uart_rx_status = 0;
+			}				
+			uart_rx_status = 4;
+		}
+		else if(uart_rx_status == 4)
+		{
+			i2c_frame_len = uart_data & 0x0f;
+			for(i = 0; i < i2c_frame_len; i++)
+			{
+				virtual_uart_tx(i2c_read());
+				i2c_ack = i2c_read_ack();
+				if(i2c_ack != 1)
+					break;
+			}
+			i2c_stop();
+			uart_rx_status = 0;
 		}
 		former_data = uart_data;
 		
