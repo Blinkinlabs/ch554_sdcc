@@ -12,6 +12,7 @@ The CH554 family of microcontrollers is notable because it has both an extremely
 
 You'll need a recent version of SDCC, as well as mingw for make, and likely also git-bash for the bash shell. Additionally, you'll need WCHISPTOOL to upload code to the chips.
 
+
 * [git for windows](https://github.com/git-for-windows/git/releases/download/v2.15.1.windows.2/Git-2.15.1.2-64-bit.exe)
 * [SDCC 3.6.0](https://sourceforge.net/projects/sdcc/files/latest/download?source=files)
 * [mingw installer](https://downloads.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe)
@@ -25,11 +26,19 @@ For Debian-based systems, this should work:
 
 	sudo apt-install build-essential sdcc
 
-The ISP tool is a little more troublesome. It's Windows only, but might work in wine (untested). A better strategy would be to re-implement it.
+We got a open-source implementation of this ISP Tool. You will get it from the following link:
+
+* [LibreCH551](https://github.com/rgwan/librech551)
+
+It works fine on CH551 and CH554.
+
+The Makefile has "flash" operation, you have a convenient way to flash your chip. This program and operation also works on Windows (need Zadig to install driver) and Mac OS.
+
+The usb-device-cdc-i2c example show you how to have a in-application firmware upgrade, it will make use of prelude flash operation..
 
 ## Get the toolchain: macOs
 
-You'll need xcode (for make), as well as SDCC
+You'll need xcode (for make), as well as SDCC. ISP Tool will be same as Linux's.
 
 ## Build the examples
 
