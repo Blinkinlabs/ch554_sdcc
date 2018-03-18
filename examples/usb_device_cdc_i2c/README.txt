@@ -6,6 +6,8 @@ This firmware and commandline tools provided you a cheap and neat (driverless) w
 
 BTW, it contains a program to configure a SI5351 on the bus. This example will let you know this protocol more easily.
 
+And this commandline program can be use as SI5351 HF local oscillator tuner, it can turn your USB-I2C bridge, TCXO and SI5351 into a VFO.
+
 Protocol is very simple, and I will describe it as follows. All response will contains <CR> <LF> for EOT.
 
 Q for request target clock generator's reference frequency.
