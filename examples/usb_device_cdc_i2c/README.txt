@@ -16,11 +16,11 @@ E for escape this device to internal bootloader for in-application re-programmin
 
 B for get baudrate, virtually, just for debug.
 
-T for an I2C transmission. Format is T<1-byte length(<16)> <AR & data, must be short than 16-byte>. If success, you will get "OK\r\n" message, if it fails, you will get "Fnn\r\n" response. nn describes what stage the error occurs.
+T for an I2C transmission. Format is T<1-byte length(<64)> <AR & data, must be short than 64-byte>. If success, you will get "OK\r\n" message, if it fails, you will get "Fnn\r\n" response. nn describes what stage the error occurs.
 
 Notice that if the highest bit on address is set, A transmission will NOT to send a I2C stop.
 
-R for an I2C reception. Format is R<AR><Length(<16)>, if there's no response from bus on send address, the device will sent "FAIL\r\n" message to your serial port. You would get length-bytes message from device.
+R for an I2C reception. Format is R<AR><Length(<64)>, if there's no response from bus on send address, the device will sent "FAIL\r\n" message to your serial port. You would get length-bytes message from device.
 
 Authors:
 

@@ -672,7 +672,7 @@ void uart_poll()
 		}
 		else if(uart_rx_status == 1)
 		{ // 54	03	C0	02	53	
-			i2c_frame_len = uart_data & 0x0f; /* 拿到长度 */
+			i2c_frame_len = uart_data & 0x3f; /* 拿到长度 */
 			if(uart_data & 0x80)
 				dontstop = 1;
 			else
@@ -733,7 +733,7 @@ void uart_poll()
 		}
 		else if(uart_rx_status == 4)
 		{
-			i2c_frame_len = uart_data & 0x0f;
+			i2c_frame_len = uart_data & 0x3f;
 			for(i = 0; i < i2c_frame_len; i++)
 			{
 				virtual_uart_tx(i2c_read());
