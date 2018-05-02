@@ -84,7 +84,7 @@ With these contents:
 
 	TARGET = fastblink
 	
-	S_FILES = \
+	C_FILES = \
         	main.c
 	
 	include ../Makefile.include
