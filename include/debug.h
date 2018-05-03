@@ -28,8 +28,13 @@ void	UART1Setup( );                     //
 uint8_t CH554UART1RcvByte( );              //CH554 UART1查询方式接收一个字节
 void  CH554UART1SendByte(uint8_t SendDat); //CH554UART1发送一个字节
 
-void putchar(char data);
+#if SDCC < 370
+void putchar(char c);
 char getchar();
+#else
+int putchar(int c);
+int getchar(void);
+#endif
 
 void CH554WDTModeSelect(uint8_t mode);     //CH554看门狗模式设置
 void CH554WDTFeed(uint8_t tim);            //CH554看门狗喂狗
