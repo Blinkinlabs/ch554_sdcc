@@ -10,4 +10,7 @@ C_FILES = \
 ASM_FILES = \
 	bitbang_asm.asm
 
+pre-flash:
+	
+
 include ../Makefile.include

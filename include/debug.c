@@ -210,6 +210,7 @@ void CH554UART0SendByte(uint8_t SendDat)
         TI = 0;
 }
 
+#if SDCC < 370
 void putchar(char c)
 {
     while (!TI) /* assumes UART is initialized */
@@ -223,6 +224,23 @@ char getchar() {
     RI = 0;
     return SBUF;
 }
+#else
+int putchar(int c)
+{
+    while (!TI) /* assumes UART is initialized */
+    ;
+    TI = 0;
+    SBUF = c & 0xFF;
+
+    return c;
+}
+
+int getchar() {
+    while(!RI); /* assumes UART is initialized */
+    RI = 0;
+    return SBUF;
+}
+#endif
 
 /*******************************************************************************
 * Function Name  : UART1Setup()

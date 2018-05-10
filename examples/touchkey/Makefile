@@ -5,4 +5,7 @@ C_FILES = \
 	../../include/debug.c \
 	../../include/touchkey.c
 
+pre-flash:
+	
+
 include ../Makefile.include
