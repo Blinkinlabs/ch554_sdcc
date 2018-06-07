@@ -66,4 +66,5 @@ clean:
 	$(TARGET).map \
 	$(TARGET).mem \
 	$(TARGET).ihx \
-	$(TARGET).hex
+	$(TARGET).hex \
+	$(TARGET).bin
