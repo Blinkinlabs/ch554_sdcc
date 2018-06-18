@@ -24,6 +24,7 @@ void	mInitSTDIO( );                      //T1作为波特率发生器
 uint8_t CH554UART0RcvByte( );              //CH554 UART0查询方式接收一个字节
 void  CH554UART0SendByte(uint8_t SendDat); //CH554UART0发送一个字节
 
+void  CH554UART1Alter();                 //CH554串口1引脚映射到P3.4/P3.2
 void	UART1Setup( );                     //
 uint8_t CH554UART1RcvByte( );              //CH554 UART1查询方式接收一个字节
 void  CH554UART1SendByte(uint8_t SendDat); //CH554UART1发送一个字节

@@ -149,6 +149,7 @@ void CH554UART0Alter()
     PIN_FUNC |= bUART0_PIN_X;                                                  //串口映射到P1.2和P1.3
 }
 
+
 /*******************************************************************************
 * Function Name  : mInitSTDIO()
 * Description    : CH554串口0初始化,默认使用T1作UART0的波特率发生器,也可以使用T2
@@ -243,6 +244,18 @@ int getchar() {
 #endif
 
 /*******************************************************************************
+* Function Name  : CH554UART1Alter()
+* Description    : Set the alternate pin mappings for UART1 (TX on P3.2, RX on P3.4)
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void CH554UART1Alter()
+{
+    PIN_FUNC |= bUART1_PIN_X;
+}
+
+/*******************************************************************************
 * Function Name  : UART1Setup()
 * Description    : CH554串口1初始化
 * Input          : None
@@ -282,7 +295,7 @@ void CH554UART1SendByte(uint8_t SendDat)
 {
         SBUF1 = SendDat;                                                             //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
         while(U1TI ==0);
-        U1TI = 1;
+        U1TI = 0;
 }
 
 /*******************************************************************************
