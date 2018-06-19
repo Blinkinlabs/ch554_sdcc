@@ -2,9 +2,7 @@
 
 #include <ch554.h>
 #include <debug.h>
-
-#define BOOT_ADDR  0x3800
-void (* __data bootloader)(void) = BOOT_ADDR;
+#include <bootloader.h>
 
 #define ENABLE_IAP_PIN 6
 SBIT(EnableIAP, 0x90, ENABLE_IAP_PIN);
