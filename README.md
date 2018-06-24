@@ -20,6 +20,18 @@ You'll need a recent version of SDCC, as well as mingw for make, and likely also
 
 TODO: How to set up the enviroment to find these bits automatically
 
+Once the tools are installed, add the following lines to the end of your .bashrc file:
+
+    # SDCC compiler tools
+    export PATH=$PATH:/c/Program\ Files/SDCC/bin
+
+    # Mingw tools (for Make)
+    export PATH=$PATH:/c/Qt/Qt5.10.0/Tools/mingw530_32/bin
+
+    alias make=mingw32-make.exe
+
+TODO: Use standalone mingw tools instead of the ones from Qt
+
 ## Get the toolchain: Linux
 
 For Debian-based systems, this should work:
