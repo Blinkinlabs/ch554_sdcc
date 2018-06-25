@@ -170,7 +170,7 @@ void	mInitSTDIO( )
     RCLK = 0;                                                                  //UART0接收时钟
     TCLK = 0;                                                                  //UART0发送时钟
     PCON |= SMOD;
-    x = 10 * FREQ_SYS / UART0_BUAD / 16;                                       //如果更改主频，注意x的值不要溢出
+    x = 10 * FREQ_SYS / UART0_BAUD / 16;                                       //如果更改主频，注意x的值不要溢出
     x2 = x % 10;
     x /= 10;
     if ( x2 >= 5 ) x ++;                                                       //四舍五入
@@ -267,7 +267,7 @@ void	UART1Setup( )
    U1SM0 = 0;                                                                   //UART1选择8位数据位
    U1SMOD = 1;                                                                  //快速模式
    U1REN = 1;                                                                   //使能接收
-   SBAUD1 = 256 - FREQ_SYS/16/UART1_BUAD;
+   SBAUD1 = 256 - FREQ_SYS/16/UART1_BAUD;
 }
 
 /*******************************************************************************

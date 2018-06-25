@@ -5,12 +5,12 @@
 
 #include <stdint.h>
 
-#ifndef  UART0_BUAD
-#define  UART0_BUAD    9600
+#ifndef  UART0_BAUD
+#define  UART0_BAUD    9600
 #endif
 
 #ifndef UART1_BAUD
-#define  UART1_BUAD    9600
+#define  UART1_BAUD    9600
 #endif
 
 void	CfgFsys( );                        //CH554时钟选择和配置
