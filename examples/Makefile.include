@@ -9,7 +9,7 @@ WCHISP = wchisptool
 #######################################################
 
 ifndef FREQ_SYS
-FREQ_SYS = 12000000
+FREQ_SYS = 16000000
 endif
 
 ifndef XRAM_SIZE
@@ -20,13 +20,15 @@ ifndef XRAM_LOC
 XRAM_LOC = 0x0000
 endif
 
-CFLAGS = -V -mmcs51 --model-small \
+ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+CFLAGS := -V -mmcs51 --model-small \
 	--xram-size $(XRAM_SIZE) --xram-loc $(XRAM_LOC) \
 	--code-size 0x2800 \
-	-I../../include -DFREQ_SYS=$(FREQ_SYS) \
+	-I$(ROOT_DIR)../include -DFREQ_SYS=$(FREQ_SYS) \
 	$(EXTRA_FLAGS)
 
-LFLAGS = $(CFLAGS)
+LFLAGS := $(CFLAGS)
 
 RELS := $(C_FILES:.c=.rel)
 
