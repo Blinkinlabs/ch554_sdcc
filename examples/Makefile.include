@@ -20,11 +20,15 @@ ifndef XRAM_LOC
 XRAM_LOC = 0x0000
 endif
 
+ifndef CODE_SIZE
+CODE_SIZE = 0x2800
+endif
+
 ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 CFLAGS := -V -mmcs51 --model-small \
 	--xram-size $(XRAM_SIZE) --xram-loc $(XRAM_LOC) \
-	--code-size 0x2800 \
+	--code-size $(CODE_SIZE) \
 	-I$(ROOT_DIR)../include -DFREQ_SYS=$(FREQ_SYS) \
 	$(EXTRA_FLAGS)
 
