@@ -4,15 +4,17 @@
 #include <spi.h>
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "usb_spi_flash.h"
 #include "spi_flash.h"
 
 #define MODE_READY 0
-#define MODE_WRITING 1
+#define MODE_READ_WRITELENGTH 1
+#define MODE_WRITING 2
 
 #define PAGE_SIZE 256
-#define SECTOR_SIZE 4096
+#define BLOCK_SIZE 65536    // Can be 32768 or 65536, choose matching Flash_EraseBlock function
 
 #define CLEAR_BIT(reg, bit) (reg &= ~(1<<bit))
 #define SET_BIT(reg, bit) (reg |= (1<<bit))
@@ -21,6 +23,7 @@ __xdata uint8_t writeBuffer[PAGE_SIZE];
 
 uint8_t mode;
 uint32_t address;
+uint32_t writelength;
 uint16_t count;
 
 // Disable all SPI pins, then boot the FPGA
@@ -52,6 +55,24 @@ void setup() {
     mode = MODE_READY;
 }
 
+void beginFlashWritePage(uint32_t address) {
+    while (Flash_Busy()) {}
+
+    SPIMasterAssertCS();
+        CH554SPIMasterWrite(CMD_WRITE_ENABLE);
+    SPIMasterDeassertCS();
+
+    SPIMasterAssertCS();
+        CH554SPIMasterWrite(CMD_PAGEPROGRAM);
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 2));    // addr[23:16]
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 1));    // addr[15:8]
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 0));    // addr[7:0]
+}
+
+void endFlashWritePage() {
+    SPIMasterDeassertCS();
+}
+
 void handleRx(uint8_t c) {
 
     if(mode == MODE_READY) {
@@ -80,22 +101,47 @@ void handleRx(uint8_t c) {
             Flash_Read(0x00000000, PAGE_SIZE, writeBuffer);
         }
         else if(c == 'w') {
-            mode = MODE_WRITING;
+            mode = MODE_READ_WRITELENGTH;
             address = 0;
             count = 0;
         }
     }
+    else if(mode == MODE_READ_WRITELENGTH) {
+        (*((uint8_t*)&(writelength) + count)) = c;    // LSB first
+        count += 1;
+
+        if(count == 4) {
+            mode = MODE_WRITING;
+            count = 0;
+
+            Flash_EraseBlock64K(address);
+        }
+    }
     else if(mode == MODE_WRITING) {
-        writeBuffer[count++] = c;
+        if(count == 0)
+            beginFlashWritePage(address);
+
+        CH554SPIMasterWrite(c);
+        count++;
 
         if(count==PAGE_SIZE) {
-            if(address%SECTOR_SIZE == 0)
-                Flash_EraseSector(address);
-
-            Flash_Write(address, PAGE_SIZE, writeBuffer);
+            endFlashWritePage();
 
             address += PAGE_SIZE;
+            writelength -= PAGE_SIZE;
             count = 0;
+
+            if(writelength == 0) {
+                while (Flash_Busy()) {}
+
+                mode = MODE_READY;
+            }
+            else {
+                if(address%BLOCK_SIZE == 0) {
+                    while (Flash_Busy()) {}
+                    Flash_EraseBlock64K(address);
+                }
+            }
         }
     }
 }

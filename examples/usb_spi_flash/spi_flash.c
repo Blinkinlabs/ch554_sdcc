@@ -3,6 +3,7 @@
 #include <ch554.h>
 #include <debug.h>
 #include <spi.h>
+#include <stdbool.h>
 #include "spi_flash.h"
 
 void Flash_ReleaseDeepPowerdown()
@@ -45,7 +46,7 @@ void Flash_EraseChip()
         CH554SPIMasterWrite(CMD_CHIP_ERASE);
     SPIMasterDeassertCS();
 
-    while (Flash_ReadStatusRegister() & STATUS_REG_BUSY) {
+    while (Flash_Busy()) {
         mDelaymS(100);
     }
 }
@@ -76,9 +77,41 @@ void Flash_EraseSector(uint32_t address)
         CH554SPIMasterWrite(*((uint8_t*)&(address) + 0));    // addr[7:0]
     SPIMasterDeassertCS();
 
-    while (Flash_ReadStatusRegister() & STATUS_REG_BUSY) {
-        //mDelaymS(10);
-    }
+    while (Flash_Busy()) {}
+}
+
+void Flash_EraseBlock32K(uint32_t address)
+{
+    // Enable write, and send chip erase command
+    SPIMasterAssertCS();
+        CH554SPIMasterWrite(CMD_WRITE_ENABLE);
+    SPIMasterDeassertCS();
+
+    SPIMasterAssertCS();
+        CH554SPIMasterWrite(CMD_BLOCK_ERASE_32K);
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 2));    // addr[23:16]
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 1));    // addr[15:8]
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 0));    // addr[7:0]
+    SPIMasterDeassertCS();
+
+    while (Flash_Busy()) {}
+}
+
+void Flash_EraseBlock64K(uint32_t address)
+{
+    // Enable write, and send chip erase command
+    SPIMasterAssertCS();
+        CH554SPIMasterWrite(CMD_WRITE_ENABLE);
+    SPIMasterDeassertCS();
+
+    SPIMasterAssertCS();
+        CH554SPIMasterWrite(CMD_BLOCK_ERASE_64K);
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 2));    // addr[23:16]
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 1));    // addr[15:8]
+        CH554SPIMasterWrite(*((uint8_t*)&(address) + 0));    // addr[7:0]
+    SPIMasterDeassertCS();
+
+    while (Flash_Busy()) {}
 }
 
 __bit Flash_Busy()
@@ -102,7 +135,9 @@ void Flash_Read(uint32_t address, uint16_t length, uint8_t *flashData)
     SPIMasterDeassertCS();
 }
 
-void Flash_Write(uint32_t address, uint16_t length, uint8_t *flashData)
+void Flash_Write(uint32_t address,
+                 uint16_t length,
+                 uint8_t *flashData)
 {
     SPIMasterAssertCS();
         CH554SPIMasterWrite(CMD_WRITE_ENABLE);
@@ -119,8 +154,6 @@ void Flash_Write(uint32_t address, uint16_t length, uint8_t *flashData)
         }
     SPIMasterDeassertCS();
 
-    while (Flash_ReadStatusRegister() & STATUS_REG_BUSY) {
-        //mDelaymS(1);
-    }
+    while (Flash_Busy()) {}
 }
 
