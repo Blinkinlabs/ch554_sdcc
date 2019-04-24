@@ -29,9 +29,8 @@ uint16_t count;
 // Disable all SPI pins, then boot the FPGA
 void releaseBus() {
     // Disable SPI pins
-    P1_DIR_PU &= ~(0xF0);   // Disable pullups
-    P1_MOD_OC |= 0xF0;      // Set to open drain mode
-    P1 |= 0xF0;             // Set outputs high
+    P1_DIR_PU &= ~(0xF0);   // Set SPI pins to high-impedance input mode
+    P1_MOD_OC &= ~(0xF0);
 
     // Pull FPGA reset line (pin 2.1) high to boot FPGA
     SET_BIT(P1,1);
@@ -41,14 +40,27 @@ void releaseBus() {
 void takeBus() {
     CLEAR_BIT(P1,1);        // Pull FPGA reset line (pin 2.1) low to hold FPGA in reset
 
+    P1_MOD_OC &= ~(0xF0);   // Set SPI pins to push/pull mode
+    P1_DIR_PU |=   0xF0;
+
+
     SPIMasterModeSet(0);    // Set up the SPI hardware
     Flash_ReleaseDeepPowerdown();
 }
 
 void setup() {
-    // CRESET_B (FPGA reset line) as push-pull output
-    SET_BIT(P1_DIR_PU, 1);
-    CLEAR_BIT(P1_MOD_OC, 1);
+    P1_DIR_PU &= ~(0x01);   // CDONE (FPGA reset line) as high-impedance input
+    P1_MOD_OC &= ~(0x01);
+
+    P1_MOD_OC &= ~(0x02);   // CRESET as push-pull output
+    P1_DIR_PU |=   0x02;
+
+    P1_DIR_PU &= ~(0x0C);   // Unused pins P1.2, P1.3 as high-impedance inputs
+    P1_MOD_OC &= ~(0x0C);
+
+    CLEAR_BIT(P1,1);        // Pull FPGA reset line (pin 2.1) low to hold FPGA in reset
+
+    mDelaymS(10);
 
     releaseBus();
 
