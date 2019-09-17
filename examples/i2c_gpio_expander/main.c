@@ -28,18 +28,34 @@ SBIT(SCL, PORT_A_REG, SCL_PIN);
 SBIT(SDA, PORT_A_REG, SDA_PIN);
 
 inline void wait_for_start() {
-    while(true) {
-        // wait for SCL and SDA both high
-        while ((SCL != 1) || (SDA != 1)) {}
+    __bit SCL_last;
+    __bit SDA_last;
 
-        // wait for SCL high and SDA low
-        while ((SCL != 1) || (SDA != 0)) {}
+begin_wait:
+    // wait for SCL and SDA both high
+    while((SCL == 0) || (SDA == 0)) {}
 
-        // wait for SCL high and SDA low
-        while ((SCL != 0) || (SDA != 0)) {}
+    // wait for SCL high and SDA low
+//    while ((SCL == 1) && (SDA == 1)) {}
+//    if(SCL == 0)
+//        goto begin_wait;
+    do {
+        SCL_last = SCL;
+        SDA_last = SDA;
+    } while((SCL_last == 1) && (SDA_last == 1));
+    if(SCL_last == 0)
+        goto begin_wait;
 
-        return;
-    }
+//    while ((SCL == 1) && (SDA == 0)) {}
+//    if(SDA == 1)
+//        goto begin_wait;
+    do {
+        SCL_last = SCL;
+        SDA_last = SDA;
+    } while((SCL_last == 1) && (SDA_last == 0));
+    if(SDA_last == 1)
+        goto begin_wait;
+
 }
 
 // Read a bit, but check for a restart
