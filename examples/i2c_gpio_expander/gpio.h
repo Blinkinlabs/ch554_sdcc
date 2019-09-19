@@ -1,5 +1,8 @@
 #pragma once
 
+#define PORT_A_REG      0x90
+#define PORT_C_REG      0xB0
+
 typedef enum {
     GPIO_MODE_INPUT,                // High impedance, input only
     GPIO_MODE_OUTPUT_PUSHPULL,      // Push-pull output

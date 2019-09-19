@@ -3,6 +3,7 @@ TARGET = i2c_gpio_expander
 C_FILES = \
 	main.c \
 	gpio.c \
+	i2c_slave.c \
 	../../include/debug.c
 
 pre-flash:
