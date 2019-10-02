@@ -5,6 +5,7 @@
 
 #include "i2c_slave.h"
 #include "gpio.h"
+#include "pins.h"
 
 SBIT(SCL, PORT_C_REG, SCL_PIN);
 SBIT(SDA, PORT_C_REG, SDA_PIN);
@@ -13,6 +14,7 @@ SBIT(SDA, PORT_C_REG, SDA_PIN);
 
 
 uint8_t i2c_slave_reg;     // Current state machine register (must always be valid)
+uint8_t i2c_slave_val;     // Current state machine value (valid after a write)
 
 inline void wait_for_start() {
     __bit SCL_last;
@@ -76,19 +78,17 @@ begin_wait:
         while (SCL == 1) {}                 \
         SDA = 1;
 
-#define send_ack_and_load()                 \
+#define send_ack_and_load(data)             \
         SDA = 0;                            \
         while(SCL == 0) {}                  \
-        /*val = regs[i2c_slave_reg];*/      \
-        val = *(regs_ptr[i2c_slave_reg]);   \
+        data = *(regs_ptr[i2c_slave_reg]);  \
         while (SCL == 1) {}                 \
         SDA = 1;
 
-#define send_ack_and_store()                \
+#define send_ack_and_store(data)            \
         SDA = 0;                            \
         while(SCL == 0) {}                  \
-        /*regs[i2c_slave_reg] = val;*/      \
-        *(regs_ptr[i2c_slave_reg]) = val;   \
+        *(regs_ptr[i2c_slave_reg]) = data;  \
         while (SCL == 1) {}                 \
         SDA = 1;
 
@@ -148,20 +148,20 @@ read_address:
         send_ack();
 
         // Look for a repeated start here
-        read_bit_2(val);
-        read_bit(val);
-        read_bit(val);
-        read_bit(val);
-        read_bit(val);
-        read_bit(val);
-        read_bit(val);
-        read_bit(val);
+        read_bit_2(i2c_slave_val);
+        read_bit(i2c_slave_val);
+        read_bit(i2c_slave_val);
+        read_bit(i2c_slave_val);
+        read_bit(i2c_slave_val);
+        read_bit(i2c_slave_val);
+        read_bit(i2c_slave_val);
+        read_bit(i2c_slave_val);
 
-        send_ack_and_store();
+        send_ack_and_store(i2c_slave_val);
         return I2C_SLAVE_WRITE;
     }
     else if(address == I2C_ADDRESS_READ) {
-        send_ack_and_load();
+        send_ack_and_load(val);
 
         write_bit(val);
         write_bit(val);
