@@ -36,7 +36,8 @@ uint8_t p1_mod_oc_shadow;
 uint8_t p1_dir_pu_shadow;
 uint8_t mdio_phy_addr;
 uint8_t mdio_phy_reg;
-uint16_t mdio_data;
+uint8_t mdio_data_h;
+uint8_t mdio_data_l;
 uint8_t gp_mem;
 
 uint8_t temp_var;
@@ -50,8 +51,8 @@ __idata uint8_t *regs_ptr[I2C_SLAVE_REG_COUNT] = {
     &p1_dir_pu_shadow,              // GPIO config register
     &mdio_phy_addr,                 // MDIO PHY address (5 bits)
     &mdio_phy_reg,                  // MDIO PHY register (5 bits)
-    (uint8_t *)&mdio_data + 0,      // MDIO DATA_HIGH register (8 bits)
-    (uint8_t *)&mdio_data + 1,      // MDIO DATA_LOW register (8 bits)
+    &mdio_data_h,                   // MDIO DATA_HIGH register (8 bits)
+    &mdio_data_l,                   // MDIO DATA_LOW register (8 bits)
     &gp_mem,                        // General purpose storage (8 bits)
 };
 
@@ -67,12 +68,11 @@ void main() {
     while (1) {
         // Re-write the status and read-only registers
         status = 0; // reset_status | mdio_dir
+        id = ID_REG_VALUE;
 
         p1_shadow = P1;                 // TODO: Setting these here gives stale values
         p1_mod_oc_shadow = P1_MOD_OC;
         p1_dir_pu_shadow = P1_DIR_PU;
-
-        id = ID_REG_VALUE;
 
         // Wait for an I2C transaction
         result = i2c_slave_poll();
@@ -81,18 +81,20 @@ void main() {
         if(result == I2C_SLAVE_WRITE) {
             switch(i2c_slave_reg) {
                 case STATUS_REG:
-                    if(status && (STATUS_REG_MDIO_START | STATUS_REG_MDIO_WRITE))
-                        mdio_master_write(mdio_phy_addr, mdio_phy_reg, mdio_data);
-                    else if(status && (STATUS_REG_MDIO_START))
-                        mdio_master_read(mdio_phy_addr, mdio_phy_reg, &mdio_data);
+                    if(i2c_slave_val & STATUS_REG_MDIO_START) {
+                        if (i2c_slave_val & STATUS_REG_MDIO_WRITE)
+                            mdio_master_write(mdio_phy_addr, mdio_phy_reg, mdio_data_h, mdio_data_l);
+                        else
+                            mdio_master_read(mdio_phy_addr, mdio_phy_reg, &mdio_data_h, &mdio_data_l);
+                    }
                     break;
                 case P1_REG:            P1 = i2c_slave_val;             break;
                 case P1_MOD_OC_REG:     P1_MOD_OC = i2c_slave_val;      break;
                 case P1_DIR_PU_REG:     P1_DIR_PU = i2c_slave_val;      break;
-                //case MDIO_PHY_ADDR_REG: mdio_phy_addr = i2c_slave_val;  break;
-                //case MDIO_PHY_REG_REG:  mdio_phy_reg = i2c_slave_val;   break;
-                //case MDIO_DATA_HIGH_REG: 
-                //case MDIO_DATA_LOW_REG: 
+                case MDIO_PHY_ADDR_REG: mdio_phy_addr = i2c_slave_val;  break;
+                case MDIO_PHY_REG_REG:  mdio_phy_reg = i2c_slave_val;   break;
+                case MDIO_DATA_HIGH_REG: mdio_data_h = i2c_slave_val;   break;
+                case MDIO_DATA_LOW_REG: mdio_data_l = i2c_slave_val;    break;
                 case SRAM_REG:          gp_mem = i2c_slave_val;         break;
                 default:
                     break;

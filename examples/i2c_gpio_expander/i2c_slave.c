@@ -88,7 +88,7 @@ begin_wait:
 #define send_ack_and_store(data)            \
         SDA = 0;                            \
         while(SCL == 0) {}                  \
-        *(regs_ptr[i2c_slave_reg]) = data;  \
+        /**(regs_ptr[i2c_slave_reg]) = data;*/  \
         while (SCL == 1) {}                 \
         SDA = 1;
 
@@ -113,7 +113,7 @@ void i2c_slave_init() {
 i2c_slave_transaction_t i2c_slave_poll() {
     uint8_t address = 0;    // Address that 
     uint8_t new_reg = 0;    // 
-    uint8_t val = 0;
+    i2c_slave_val = 0;
 
     // TODO: Timeout during transaction
 
@@ -161,16 +161,16 @@ read_address:
         return I2C_SLAVE_WRITE;
     }
     else if(address == I2C_ADDRESS_READ) {
-        send_ack_and_load(val);
+        send_ack_and_load(i2c_slave_val);
 
-        write_bit(val);
-        write_bit(val);
-        write_bit(val);
-        write_bit(val);
-        write_bit(val);
-        write_bit(val);
-        write_bit(val);
-        write_bit(val);
+        write_bit(i2c_slave_val);
+        write_bit(i2c_slave_val);
+        write_bit(i2c_slave_val);
+        write_bit(i2c_slave_val);
+        write_bit(i2c_slave_val);
+        write_bit(i2c_slave_val);
+        write_bit(i2c_slave_val);
+        write_bit(i2c_slave_val);
 
         send_ack();
         return I2C_SLAVE_READ;
