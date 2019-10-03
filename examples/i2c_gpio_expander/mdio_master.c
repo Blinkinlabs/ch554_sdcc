@@ -23,12 +23,15 @@ SBIT(MDIO, PORT_C_REG, MDIO_PIN);
 
 static void write_byte(uint8_t val) {
     uint8_t bit;
+    __bit temp;
 
     for(bit = 8; bit > 0; bit--) {
-        MDIO = (val & 0x80);
-        MDC = 1;
-        val = val << 1;
+        temp = (val & 0x80);
         MDC = 0;
+        MDIO = temp;
+        MDIO = temp;
+        val = val << 1;
+        MDC = 1;
     }
 }
 
@@ -37,9 +40,11 @@ static uint8_t read_byte() {
     uint8_t bit;
 
     for(bit = 8; bit > 0; bit--) {
-        val = val << 1 | MDIO;
         MDC = 1;
-        MDC = 1;    // NOP
+        MDC = 1;
+        MDC = 1;
+        MDC = 1;
+        val = val << 1 | MDIO;
         MDC = 0;
     }
 
@@ -47,7 +52,7 @@ static uint8_t read_byte() {
 }
 
 void mdio_master_init() {
-    gpio_pin_mode(MDC_PIN, MDC_PORT, GPIO_MODE_OUTPUT_PUSHPULL);
+    gpio_pin_mode(MDC_PIN, MDC_PORT, GPIO_MODE_OPEN_DRAIN_PULLUP);
     gpio_pin_mode(MDIO_PIN, MDIO_PORT, GPIO_MODE_OPEN_DRAIN_PULLUP);
 }
 
@@ -74,6 +79,8 @@ void mdio_master_write(
     write_byte(ctrl_byte_1);
     write_byte(data_h);
     write_byte(data_l);
+    MDC = 0;
+    MDIO = 1;
 }
 
 void mdio_master_read(
@@ -99,4 +106,10 @@ void mdio_master_read(
     write_byte(ctrl_byte_1);
     *data_h = read_byte();
     *data_l = read_byte();
+    MDC = 1;    // Pad with an extra read, since we are reading on the down clock
+    MDC = 1;
+    MDC = 1;
+    MDC = 1;
+    MDC = 1;
+    MDC = 0;
 }
