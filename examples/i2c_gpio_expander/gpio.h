@@ -11,3 +11,6 @@ typedef enum {
 } gpio_mode_t;
 
 void gpio_pin_mode(uint8_t pin, uint8_t port, gpio_mode_t mode);
+
+void gpio_pin_write(uint8_t pin, uint8_t port, __bit value);
+__bit gpio_pin_read(uint8_t pin, uint8_t port);

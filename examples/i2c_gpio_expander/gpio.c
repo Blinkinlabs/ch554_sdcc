@@ -40,3 +40,39 @@ void gpio_pin_mode(uint8_t pin, uint8_t port, gpio_mode_t mode) {
             break;
     }
 }
+
+void gpio_pin_write(uint8_t pin, uint8_t port, __bit value) {
+    const uint8_t mod = (1 << pin);
+    switch(port) {
+        case 1:
+            if(value)
+                P1 |= mod;
+            else
+                P1 &= ~mod;
+            break;
+        case 3:
+            if(value)
+                P3 |= mod;
+            else
+                P3 &= ~mod;
+            break;
+        default:
+            break;
+    }
+}
+
+__bit gpio_pin_read(uint8_t pin, uint8_t port) {
+    const uint8_t mod = (1 << pin);
+    switch(port) {
+        case 1:
+            return (P1 & mod);
+            break;
+        case 3:
+            return (P3 & mod);
+            break;
+        default:
+            break;
+    }
+
+    return 0;
+}

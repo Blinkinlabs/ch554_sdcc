@@ -56,6 +56,8 @@ __idata uint8_t *regs_ptr[I2C_SLAVE_REG_COUNT] = {
     &gp_mem,                        // General purpose storage (8 bits)
 };
 
+SBIT(LED, PORT_A_REG, INDICATOR_LED_PIN);
+
 void main() {
     i2c_slave_transaction_t result;
 
@@ -65,6 +67,24 @@ void main() {
     i2c_slave_init();
     mdio_master_init();
 
+    // Disable ESP EN output TODO: Make this functional
+    gpio_pin_mode(ESP_EN_PIN, ESP_EN_PORT, GPIO_MODE_INPUT);
+    gpio_pin_mode(CRESET_B_PIN, CRESET_B_PORT, GPIO_MODE_INPUT);
+
+    gpio_pin_mode(PHY_REFCLK_EN_PIN, PHY_REFCLK_EN_PORT, GPIO_MODE_INPUT);
+    gpio_pin_mode(PHY_RESET_PIN, PHY_RESET_PORT, GPIO_MODE_INPUT);
+    gpio_pin_mode(RESET_BUTTON_PIN, RESET_BUTTON_PORT, GPIO_MODE_INPUT);
+
+    gpio_pin_mode(INDICATOR_LED_PIN, INDICATOR_LED_PORT, GPIO_MODE_OUTPUT_PUSHPULL);
+
+    while (1) {
+        //gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, 0);
+        //gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, 1);
+        
+        gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, gpio_pin_read(RESET_BUTTON_PIN, RESET_BUTTON_PORT));
+    }
+
+    // I2C slave listen routine
     while (1) {
         // Re-write the status and read-only registers
         status = 0; // reset_status | mdio_dir
