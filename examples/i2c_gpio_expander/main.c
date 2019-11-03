@@ -56,7 +56,56 @@ __idata uint8_t *regs_ptr[I2C_SLAVE_REG_COUNT] = {
     &gp_mem,                        // General purpose storage (8 bits)
 };
 
-SBIT(LED, PORT_A_REG, INDICATOR_LED_PIN);
+void outputs_init() {
+    // Set all P1 pins in open drain mode, with output disabled
+    P1_MOD_OC = 0xFF;
+    P1_DIR_PU = 0x00;
+    P1 = 0xFF;
+}
+
+void reset_button_init() {
+    gpio_pin_mode(RESET_BUTTON_PIN, RESET_BUTTON_PORT, GPIO_MODE_INPUT);
+
+    EX0 = 1;    // Enable External input 0 (reset button)
+    EX1 = 1;    // Enable External input 1 (ESP_EN line)
+    EA = 1;     // Global interrupt enable
+}
+
+
+void BUTTON_ISR(void) __interrupt (INT_NO_INT0) {
+    EA = 0;     // Disable further interrupts
+
+    // Put the ESP in reset
+    gpio_pin_write(ESP_EN_PIN, ESP_EN_PORT, 0);
+
+    // Put all peripherals in their default state
+    // Note: this also turns off the LED
+    outputs_init();
+
+    // TODO: Measure how many seconds the button was held down
+    while(gpio_pin_read(RESET_BUTTON_PIN, RESET_BUTTON_PORT) == 0) {}
+
+    // And reset
+    SAFE_MOD = 0x55;
+    SAFE_MOD = 0xAA;
+    GLOBAL_CFG |= bSW_RESET;
+}
+
+void ESP_EN_ISR(void) __interrupt (INT_NO_INT1) {
+    EA = 0;     // Disable further interrupts
+
+    // Put all peripherals in their default state
+    // Note: this also turns off the LED
+    outputs_init();
+
+    // Wait until the ESP_EN_PIN is released
+    while(gpio_pin_read(ESP_EN_PIN, ESP_EN_PORT) == 0) {}
+
+    // And reset
+    SAFE_MOD = 0x55;
+    SAFE_MOD = 0xAA;
+    GLOBAL_CFG |= bSW_RESET;
+}
 
 void main() {
     i2c_slave_transaction_t result;
@@ -64,25 +113,16 @@ void main() {
     CfgFsys();
 //    mInitSTDIO();   // debug output on P3.1
 
+    // Disable ESP EN output
+    gpio_pin_mode(ESP_EN_PIN, ESP_EN_PORT, GPIO_MODE_OPEN_DRAIN);
+
+    outputs_init();
+
+    gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, 0);
+
     i2c_slave_init();
     mdio_master_init();
-
-    // Disable ESP EN output TODO: Make this functional
-    gpio_pin_mode(ESP_EN_PIN, ESP_EN_PORT, GPIO_MODE_INPUT);
-    gpio_pin_mode(CRESET_B_PIN, CRESET_B_PORT, GPIO_MODE_INPUT);
-
-    gpio_pin_mode(PHY_REFCLK_EN_PIN, PHY_REFCLK_EN_PORT, GPIO_MODE_INPUT);
-    gpio_pin_mode(PHY_RESET_PIN, PHY_RESET_PORT, GPIO_MODE_INPUT);
-    gpio_pin_mode(RESET_BUTTON_PIN, RESET_BUTTON_PORT, GPIO_MODE_INPUT);
-
-    gpio_pin_mode(INDICATOR_LED_PIN, INDICATOR_LED_PORT, GPIO_MODE_OUTPUT_PUSHPULL);
-
-    while (1) {
-        //gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, 0);
-        //gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, 1);
-        
-        gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, gpio_pin_read(RESET_BUTTON_PIN, RESET_BUTTON_PORT));
-    }
+    reset_button_init();
 
     // I2C slave listen routine
     while (1) {
