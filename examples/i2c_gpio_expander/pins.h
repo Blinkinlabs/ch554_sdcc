@@ -7,6 +7,14 @@
 #define SCL_PORT            3
 #define SCL_PIN             1
 
+// Debug pin A
+#define DEBUG_A_PORT        1
+#define DEBUG_A_PIN         3
+
+// Debug pin B
+#define DEBUG_B_PORT        1
+#define DEBUG_B_PIN         2
+
 // Reset button input
 #define RESET_BUTTON_PORT   3
 #define RESET_BUTTON_PIN    2

@@ -10,11 +10,28 @@
 SBIT(SCL, PORT_C_REG, SCL_PIN);
 SBIT(SDA, PORT_C_REG, SDA_PIN);
 
+SBIT(DBGA, PORT_A_REG, DEBUG_A_PIN);
+SBIT(DBGB, PORT_A_REG, DEBUG_B_PIN);
+
 //static uint8_t regs[I2C_SLAVE_REG_COUNT];
 
 
-uint8_t i2c_slave_reg;     // Current state machine register (must always be valid)
-uint8_t i2c_slave_val;     // Current state machine value (valid after a write)
+uint8_t i2c_slave_reg;     //!< Current state machine register (must always be valid)
+uint8_t i2c_slave_val;     //!< Current state machine value (valid after a write)
+
+void i2c_slave_init() {
+//    uint8_t i;
+
+    i2c_slave_reg = 0;
+//    for(i = 0; i < I2C_SLAVE_REG_COUNT; i++)
+//        regs[i] = i;
+
+    gpio_pin_mode(SCL_PIN, SCL_PORT, GPIO_MODE_INPUT);
+    gpio_pin_mode(SDA_PIN, SDA_PORT, GPIO_MODE_OPEN_DRAIN);
+
+    gpio_pin_mode(DEBUG_A_PIN, DEBUG_A_PORT, GPIO_MODE_OUTPUT_PUSHPULL);
+    gpio_pin_mode(DEBUG_B_PIN, DEBUG_B_PORT, GPIO_MODE_OUTPUT_PUSHPULL);
+}
 
 inline void wait_for_start() {
     __bit SCL_last;
@@ -99,18 +116,9 @@ begin_wait:
         while (SCL == 1) {}                 \
         SDA = 1;
 
-void i2c_slave_init() {
-//    uint8_t i;
-
-    i2c_slave_reg = 0;
-//    for(i = 0; i < I2C_SLAVE_REG_COUNT; i++)
-//        regs[i] = i;
-
-    gpio_pin_mode(SCL_PIN, SCL_PORT, GPIO_MODE_INPUT);
-    gpio_pin_mode(SDA_PIN, SDA_PORT, GPIO_MODE_OPEN_DRAIN);
-}
 
 i2c_slave_transaction_t i2c_slave_poll() {
+
     uint8_t address = 0;    // Address that 
     uint8_t new_reg = 0;    // 
     i2c_slave_val = 0;
@@ -119,6 +127,8 @@ i2c_slave_transaction_t i2c_slave_poll() {
 
     wait_for_start();
 read_address:
+    DBGA = 1;
+    DBGB = 0;
     read_bit(address);  // 7 address bits
     read_bit(address);
     read_bit(address);
@@ -129,6 +139,8 @@ read_address:
     read_bit(address);  // Read/Write bit
 
     if(address == I2C_ADDRESS_WRITE) {
+        DBGA = 0;
+        DBGB = 1;
         send_ack();
 
         read_bit(new_reg);
@@ -142,6 +154,8 @@ read_address:
 
         if(new_reg >= I2C_SLAVE_REG_COUNT) {
             send_nack();
+            DBGB = 0;
+            DBGA = 0;
             return I2C_SLAVE_INVALID_REG;
         }
         i2c_slave_reg = new_reg;
@@ -158,9 +172,13 @@ read_address:
         read_bit(i2c_slave_val);
 
         send_ack_and_store(i2c_slave_val);
+        DBGA = 0;
+        DBGB = 0;
         return I2C_SLAVE_WRITE;
     }
     else if(address == I2C_ADDRESS_READ) {
+        DBGA = 1;
+        DBGB = 1;
         send_ack_and_load(i2c_slave_val);
 
         write_bit(i2c_slave_val);
@@ -173,9 +191,13 @@ read_address:
         write_bit(i2c_slave_val);
 
         send_ack();
+        DBGA = 0;
+        DBGB = 0;
         return I2C_SLAVE_READ;
     }
     else {
+        DBGA = 0;
+        DBGB = 0;
         return I2C_SLAVE_WRONG_ADDRESS;
     }
 }

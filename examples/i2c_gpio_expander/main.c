@@ -42,27 +42,33 @@ uint8_t gp_mem;
 
 uint8_t temp_var;
 
-// I2C device register map
+//! @brief I2C device register map
 __idata uint8_t *regs_ptr[I2C_SLAVE_REG_COUNT] = {
-    &status,                        // Status register
-    &id,                            // Chip ID register
-    &p1_shadow,                     // GPIO value register
-    &p1_mod_oc_shadow,              // GPIO config register
-    &p1_dir_pu_shadow,              // GPIO config register
-    &mdio_phy_addr,                 // MDIO PHY address (5 bits)
-    &mdio_phy_reg,                  // MDIO PHY register (5 bits)
-    &mdio_data_h,                   // MDIO DATA_HIGH register (8 bits)
-    &mdio_data_l,                   // MDIO DATA_LOW register (8 bits)
-    &gp_mem,                        // General purpose storage (8 bits)
+    &status,                        //!< Status register
+    &id,                            //!< Chip ID register
+    &p1_shadow,                     //!< GPIO value register
+    &p1_mod_oc_shadow,              //!< GPIO config register
+    &p1_dir_pu_shadow,              //!< GPIO config register
+    &mdio_phy_addr,                 //!< MDIO PHY address (5 bits)
+    &mdio_phy_reg,                  //!< MDIO PHY register (5 bits)
+    &mdio_data_h,                   //!< MDIO DATA_HIGH register (8 bits)
+    &mdio_data_l,                   //!< MDIO DATA_LOW register (8 bits)
+    &gp_mem,                        //!< General purpose storage (8 bits)
 };
 
+//! @brief Initialize the programmable GPIO outputs
+//!
+//! Set all P1 pins in open drain mode, with output disabled
 void outputs_init() {
-    // Set all P1 pins in open drain mode, with output disabled
     P1_MOD_OC = 0xFF;
     P1_DIR_PU = 0x00;
     P1 = 0xFF;
 }
 
+//! @brief Initialize the reset button input
+//!
+//! Sets the pin mode for the reset button to input, and enables the
+//! pin change interrupt on that pin.
 void reset_button_init() {
     gpio_pin_mode(RESET_BUTTON_PIN, RESET_BUTTON_PORT, GPIO_MODE_INPUT);
 
@@ -71,7 +77,14 @@ void reset_button_init() {
     EA = 1;     // Global interrupt enable
 }
 
-
+//! @brief Button press interrupt
+//!
+//! This interrupt is triggered by a user pressing the reset button.
+//!
+//! When this happens, the BMC will immediately pull the ESP_EN pin low to
+//! put the ESP32 in reset, and then reset all programmable GPIO pins, in order
+//! to disable attached peripherals. It will then monitor for the reset button
+//! to be released, and will then reset the BMC.
 void BUTTON_ISR(void) __interrupt (INT_NO_INT0) {
     EA = 0;     // Disable further interrupts
 
@@ -91,6 +104,14 @@ void BUTTON_ISR(void) __interrupt (INT_NO_INT0) {
     GLOBAL_CFG |= bSW_RESET;
 }
 
+//! @brief ESP Enabled external change interrupt
+//!
+//! This interrupt is triggered when an external source (probably the USB-serial
+//! coverter) pulls the ESP_EN line low to put the ESP32 in reset.
+//!
+//! When this happens, the BMC will immediately reset all GPIO pins, in order
+//! to disable attached peripherals. It will then monitor for the ESP_EN line
+//! to be released, and will then reset the BMC.
 void ESP_EN_ISR(void) __interrupt (INT_NO_INT1) {
     EA = 0;     // Disable further interrupts
 
@@ -120,9 +141,9 @@ void main() {
 
     gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, 0);
 
+    reset_button_init();
     i2c_slave_init();
     mdio_master_init();
-    reset_button_init();
 
     // I2C slave listen routine
     while (1) {
