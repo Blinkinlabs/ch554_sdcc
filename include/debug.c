@@ -4,10 +4,10 @@
 * Version            : V1.0
 * Date               : 2017/01/20
 * Description        : CH554 DEBUG Interface
-                     CH554主频修改、延时函数定义
-                     串口0和串口1初始化
-                     串口0和串口1的收发子函数
-                     看门狗初始化										 
+                     CH554 main frequency modification, delay function definition
+                     Serial port 0 and serial port 1 initialization
+                     Serial port 0 and serial port 1 transceiver subfunctions
+                     Watchdog initialization										 
 *******************************************************************************/
 
 #include <stdint.h>
@@ -17,9 +17,9 @@
 
 /*******************************************************************************
 * Function Name  : CfgFsys( )
-* Description    : CH554时钟选择和配置函数,默认使用Fsys 6MHz，FREQ_SYS可以通过
-                   CLOCK_CFG配置得到，公式如下：
-                   Fsys = (Fosc * 4/(CLOCK_CFG & MASK_SYS_CK_SEL);具体时钟需要自己配置 
+* Description    : CH554 clock selection and configuration function, Fsys 6MHz is used by default, FREQ_SYS can be passed
+                   CLOCK_CFG configuration, the formula is as follows:
+                   Fsys = (Fosc * 4/(CLOCK_CFG & MASK_SYS_CK_SEL);The specific clock needs to be configured by yourself 
 * Input          : None
 * Output         : None
 * Return         : None
@@ -61,12 +61,12 @@ void	CfgFsys( )
 
 /*******************************************************************************
 * Function Name  : mDelayus(UNIT16 n)
-* Description    : us延时函数
+* Description    : us delay function
 * Input          : UNIT16 n
 * Output         : None
 * Return         : None
 *******************************************************************************/ 
-void	mDelayuS( uint16_t n )  // 以uS为单位延时
+void	mDelayuS( uint16_t n )  // Delay in uS
 {
 #ifdef	FREQ_SYS
 #if		FREQ_SYS <= 6000000
@@ -119,7 +119,7 @@ void	mDelayuS( uint16_t n )  // 以uS为单位延时
 
 /*******************************************************************************
 * Function Name  : mDelayms(UNIT16 n)
-* Description    : ms延时函数
+* Description    : ms delay function
 * Input          : UNIT16 n
 * Output         : None
 * Return         : None
@@ -139,7 +139,7 @@ void	mDelaymS( uint16_t n )                                                  // 
 
 /*******************************************************************************
 * Function Name  : CH554UART0Alter()
-* Description    : CH554串口0引脚映射,串口映射到P0.2和P0.3
+* Description    : CH554Serial port 0 pin mapping, serial port mapping to P0.2 and P0.3
 * Input          : None
 * Output         : None
 * Return         : None
@@ -152,8 +152,8 @@ void CH554UART0Alter()
 
 /*******************************************************************************
 * Function Name  : mInitSTDIO()
-* Description    : CH554串口0初始化,默认使用T1作UART0的波特率发生器,也可以使用T2
-                   作为波特率发生器
+* Description    : CH554 serial port 0 is initialized, T1 is used as the baud rate generator of UART0 by default, T2 can also be used
+                   As a baud rate generator
 * Input          : None
 * Output         : None
 * Return         : None
@@ -199,14 +199,14 @@ uint8_t  CH554UART0RcvByte( )
 
 /*******************************************************************************
 * Function Name  : CH554UART0SendByte(uint8_t SendDat)
-* Description    : CH554UART0发送一个字节
-* Input          : uint8_t SendDat；要发送的数据
+* Description    : CH554UART0 sends a byte
+* Input          : uint8_t SendDat; the data to be sent
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void CH554UART0SendByte(uint8_t SendDat)
 {
-        SBUF = SendDat;                                                              //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
+        SBUF = SendDat;                                                              // The query is sent, the following two statements can be used in the interrupt mode, but TI = 0 is required before sending
         while(TI ==0);
         TI = 0;
 }
@@ -300,7 +300,7 @@ void CH554UART1SendByte(uint8_t SendDat)
 
 /*******************************************************************************
 * Function Name  : CH554WDTModeSelect(uint8_t mode)
-* Description    : CH554看门狗模式选择
+* Description    : CH554 watchdog mode selection
 * Input          : uint8_t mode
                    0  timer
                    1  watchDog
@@ -310,19 +310,19 @@ void CH554UART1SendByte(uint8_t SendDat)
 void CH554WDTModeSelect(uint8_t mode)
 {
    SAFE_MOD = 0x55;
-   SAFE_MOD = 0xaa;                                                             //进入安全模式
+   SAFE_MOD = 0xaa;                                                             //Enter Safe Mode
    if(mode){
-     GLOBAL_CFG |= bWDOG_EN;                                                    //启动看门狗复位
+     GLOBAL_CFG |= bWDOG_EN;                                                    //Start watchdog reset
    }
-   else GLOBAL_CFG &= ~bWDOG_EN;	                                            //启动看门狗仅仅作为定时器
-   SAFE_MOD = 0x00;                                                             //退出安全模式
-   WDOG_COUNT = 0;                                                              //看门狗赋初值
+   else GLOBAL_CFG &= ~bWDOG_EN;	                                            //Start watchdog only as a timer
+   SAFE_MOD = 0x00;                                                             //exit safe Mode
+   WDOG_COUNT = 0;                                                              //Watchdog assignment initial value
 }
 
 /*******************************************************************************
 * Function Name  : CH554WDTFeed(uint8_t tim)
-* Description    : CH554看门狗定时时间设置
-* Input          : uint8_t tim 看门狗复位时间设置
+* Description    : CH554 watchdog timer time setting
+* Input          : uint8_t tim watchdog reset time setting
                    00H(6MHz)=2.8s
                    80H(6MHz)=1.4s
 * Output         : None
@@ -330,5 +330,5 @@ void CH554WDTModeSelect(uint8_t mode)
 *******************************************************************************/
 void CH554WDTFeed(uint8_t tim)
 {
-   WDOG_COUNT = tim;                                                             //看门狗计数器赋值
+   WDOG_COUNT = tim;                                                             //Watchdog counter assignment
 }
