@@ -300,7 +300,7 @@ void CH554UART1SendByte(uint8_t SendDat)
 
 /*******************************************************************************
 * Function Name  : CH554WDTModeSelect(uint8_t mode)
-* Description    : CH554看门狗模式选择
+* Description    : CH554 watchdog mode selection
 * Input          : uint8_t mode
                    0  timer
                    1  watchDog
@@ -314,7 +314,7 @@ void CH554WDTModeSelect(uint8_t mode)
    if(mode){
      GLOBAL_CFG |= bWDOG_EN;                                                    //启动看门狗复位
    }
-   else GLOBAL_CFG &= ~bWDOG_EN;	                                            //启动看门狗仅仅作为定时器
+   else GLOBAL_CFG &= ~bWDOG_EN;	                                            // Start watchdog only as a timer
    SAFE_MOD = 0x00;                                                             //退出安全模式
    WDOG_COUNT = 0;                                                              //看门狗赋初值
 }
@@ -322,7 +322,7 @@ void CH554WDTModeSelect(uint8_t mode)
 /*******************************************************************************
 * Function Name  : CH554WDTFeed(uint8_t tim)
 * Description    : CH554看门狗定时时间设置
-* Input          : uint8_t tim 看门狗复位时间设置
+* Input          : uint8_t tim Watchdog reset time setting
                    00H(6MHz)=2.8s
                    80H(6MHz)=1.4s
 * Output         : None
@@ -330,5 +330,5 @@ void CH554WDTModeSelect(uint8_t mode)
 *******************************************************************************/
 void CH554WDTFeed(uint8_t tim)
 {
-   WDOG_COUNT = tim;                                                             //看门狗计数器赋值
+   WDOG_COUNT = tim;                                                            // Watchdog counter assignment
 }

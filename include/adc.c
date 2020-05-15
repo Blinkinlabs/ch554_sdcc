@@ -15,8 +15,7 @@
 #define SUCCESS 1
 #define FAIL -1
 
-#define ADC_INTERRUPT  1
-uint16_t UserData;
+//uint16_t UserData;
 /*******************************************************************************
 * Function Name  : ADCInit(uint8_t div)
 * Description    : ADC sampling clock setting, module is turned on, interrupt is turned on
@@ -88,11 +87,14 @@ uint8_t VoltageCMPModeInit(uint8_t fo,uint8_t re)
 }
 
 #if ADC_INTERRUPT
+
+// Must be copied into main if ADC is interrupt driven 
 /*******************************************************************************
 * Function Name  : ADCInterrupt(void)
 * Description    : ADC Interrupt service routine
 *******************************************************************************/
-void	ADCInterrupt( void ) __interrupt(INT_NO_ADC)                        //ADC interrupt service routine, using register set 1
+/*
+void	ADCInterrupt(void) __interrupt(INT_NO_ADC)                        //ADC interrupt service routine, using register set 1
 { 
     if(ADC_IF ==  1)                                                          //ADC complete interrupt
     { 
@@ -106,5 +108,6 @@ void	ADCInterrupt( void ) __interrupt(INT_NO_ADC)                        //ADC i
       CMP_IF = 0;		                                                          //Clear Comparator Complete Interrupt
     }
 }
+*/
 #endif
 
