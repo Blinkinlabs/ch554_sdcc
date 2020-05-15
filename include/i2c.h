@@ -4,7 +4,7 @@
 * License		: MIT
 * Version		: V1.0
 * Date			: 2018/03/17
-* Description		: 8051software I2C
+* Description		: 8051 软件 I2C
 *******************************************************************************/
 #ifndef _I2C_H_
 

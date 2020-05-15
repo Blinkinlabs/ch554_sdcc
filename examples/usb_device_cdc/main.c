@@ -44,9 +44,9 @@ __code uint8_t CfgDesc[] ={
     0x05,0x24,0x06,0x00,0x01,                                 //CDC interface numbered 0; data interface numbered 1
     0x07,0x05,0x81,0x03,0x08,0x00,0xFF,                       //Interrupt upload endpoint descriptor
     //The following is the interface 1 (data interface) descriptor
-    0x09,0x04,0x01,0x00,0x02,0x0a,0x00,0x00,0x00,             //数据接口描述符
-    0x07,0x05,0x02,0x02,0x40,0x00,0x00,                       //端点描述符
-    0x07,0x05,0x82,0x02,0x40,0x00,0x00,                       //端点描述符
+    0x09,0x04,0x01,0x00,0x02,0x0a,0x00,0x00,0x00,             //Data interface descriptor
+    0x07,0x05,0x02,0x02,0x40,0x00,0x00,                       //Endpoint descriptor
+    0x07,0x05,0x82,0x02,0x40,0x00,0x00,                       //Endpoint descriptor
 };
 /*字符串描述符*/
 unsigned char  __code LangDes[]={0x04,0x03,0x09,0x04};           //Language descriptor
@@ -209,13 +209,13 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                     case SET_LINE_CODING:      //0x20  Configure
                         break;
                     default:
-                        len = 0xFF;  								 					                 /*命令不支持*/
+                        len = 0xFF;  								 					                 /*Command not supported*/
                         break;
                     }
                 }
-                else                                                             //标准请求
+                else                                                             //Standard request
                 {
-                    switch(SetupReq)                                             //请求码
+                    switch(SetupReq)                                             //Request code
                     {
                     case USB_GET_DESCRIPTOR:
                         switch(UsbSetupBuf->wValueH)
@@ -251,20 +251,20 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                             }
                             break;
                         default:
-                            len = 0xff;                                                //不支持的命令或者出错
+                            len = 0xff;                                                //Unsupported command or error
                             break;
                         }
                         if ( SetupLen > len )
                         {
-                            SetupLen = len;    //限制总长度
+                            SetupLen = len;    //Limit total length
                         }
-                        len = SetupLen >= DEFAULT_ENDP0_SIZE ? DEFAULT_ENDP0_SIZE : SetupLen;                            //本次传输长度
-                        memcpy(Ep0Buffer,pDescr,len);                                  //加载上传数据
+                        len = SetupLen >= DEFAULT_ENDP0_SIZE ? DEFAULT_ENDP0_SIZE : SetupLen;                            //This transmission length
+                        memcpy(Ep0Buffer,pDescr,len);                                  //Load upload data
                         SetupLen -= len;
                         pDescr += len;
                         break;
                     case USB_SET_ADDRESS:
-                        SetupLen = UsbSetupBuf->wValueL;                              //暂存USB设备地址
+                        SetupLen = UsbSetupBuf->wValueL;                              //Temporary storage of USB device address
                         break;
                     case USB_GET_CONFIGURATION:
                         Ep0Buffer[0] = UsbConfig;
@@ -279,7 +279,7 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                     case USB_GET_INTERFACE:
                         break;
                     case USB_CLEAR_FEATURE:                                            //Clear Feature
-                        if( ( UsbSetupBuf->bRequestType & 0x1F ) == USB_REQ_RECIP_DEVICE )                  /* 清除设备 */
+                        if( ( UsbSetupBuf->bRequestType & 0x1F ) == USB_REQ_RECIP_DEVICE )                  /* Remove device */
                         {
                             if( ( ( ( uint16_t )UsbSetupBuf->wValueH << 8 ) | UsbSetupBuf->wValueL ) == 0x01 )
                             {
