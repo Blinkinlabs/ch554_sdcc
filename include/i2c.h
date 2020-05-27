@@ -18,13 +18,13 @@ extern void i2c_start();
 
 extern void i2c_stop();
 
-extern void i2c_write(uint8_t data);
+extern void i2c_write(unsigned char data);
 
 extern bool i2c_read_ack();
 
 extern bool i2c_read_nak();
 
-extern uint8_t i2c_read();
+extern unsigned char i2c_read();
 
 #define TW_READ		0x01
 
