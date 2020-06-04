@@ -1,6 +1,10 @@
 {
     "files.associations": {
-        "USBHostHUB_KM.C": "cpp",
-        "EXAM1.C": "cpp"
+
+        "[SubtitleTools.com] Main.C": "cpp",
+        "Main.C": "cpp",
+        "ADC.C": "cpp",
+        "type_c.C": "cpp"
+
     }
 }

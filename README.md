@@ -1,10 +1,13 @@
-# CH554 software development kit for SDCC [![Build Status](https://travis-ci.org/Blinkinlabs/ch554_sdcc.svg?branch=master)](https://travis-ci.org/Blinkinlabs/ch554_sdcc)
+# CH554 software development kit for SDCC forked from the excellent work done by blinkinlabs.
 
-![image](https://raw.githubusercontent.com/Blinkinlabs/ch554_sdcc/master/documentation/devboard.png)
 
 This is a port of the CH554 SDK, from Keil C51 to SDCC.
 
-The CH554 family of microcontrollers is notable because it has both an extremely low cost, USB device and host peripherals, and a preloaded USB bootloader.
+The CH55x family of microcontrollers is notable because it has both an extremely low cost, USB device and host peripherals, and a preloaded USB bootloader. 
+
+# Other Info 
+
+Contains tranlated comments for esier understanding how the ch55x range operate and extra examples included.
 
 # Getting Started
 
@@ -56,8 +59,8 @@ You'll need xcode (for make), as well as SDCC. ISP Tool will be same as Linux's.
 
 Then clone this repository, and build the examples:
 
-	git clone https://github.com/Blinkinlabs/ch554_sdcc.git
-	cd ch554_sdcc/examples
+	git clone https://github.com/rabid-inventor/ch55x_sdcc.git
+	cd ch55x_sdcc/examples
 	make
 
 If everything is set up correctly, all of the examples should now be built.
@@ -193,7 +196,7 @@ Here is a list of the different peripheral drivers and examples that need to be 
 
 | Peripheral | Description | Status |
 | --- | --- | --- |
-| ADC | Analog-to-digital converter | not started |
+| ADC | Analog-to-digital converter | in progress |
 | DataFlash | DataFlash (EEPROM) peripheral | not started |
 | GPIO | I/O peripheral example | not started |
 | UART0/stdlib | stdio example using UART0 | in progress |
@@ -206,7 +209,7 @@ Here is a list of the different peripheral drivers and examples that need to be 
 | Timer2 | Extended Timer 2 | not started |
 | TouchKey | Capacitive touch peripheral | in progress |
 | Chip ID | Read the built-in chip ID | not started |
-| Type-C | USB C power negotiation peripheral | not started |
+| Type-C | USB C power negotiation peripheral | in progress |
 | USB\Device | USB device peripheral: HID (?) profile | not started |
 | S_CDC | USB device peripheral: CDC profile | complete |
 | U_DISK | USB device peripheral: USB mass storage device profile | not started |

@@ -1,16 +1,16 @@
 ﻿#pragma once
 
 #if PWM_INTERRUPT
-extern void  PWMInterruptEnable();                                            //PWM中断使能
+extern void  PWMInterruptEnable();                                            //PWM interrupt enable
 #endif
 
-#define SetPWMClk(CK_SE) (PWM_CK_SE = CK_SE)                                  //分频,默认时钟Fsys    
+#define SetPWMClk(CK_SE) (PWM_CK_SE = CK_SE)                                  //Frequency division, default clock Fsys 
 
-#define SetPWM1Dat(dat)  (PWM_DATA1 = dat)                                    //设置PWM输出占空比
+#define SetPWM1Dat(dat)  (PWM_DATA1 = dat)                                    //Set PWM output duty cycle
 #define SetPWM2Dat(dat)  (PWM_DATA2 = dat)
 
-#define PWM1PinAlter( )  {PIN_FUNC |= bPWM1_PIN_X;}                           //PWM映射脚P30
-#define PWM2PinAlter( )  {PIN_FUNC |= bPWM2_PIN_X;}                           //PWM映射脚P31
+#define PWM1PinAlter( )  {PIN_FUNC |= bPWM1_PIN_X;}                           // PWM mapping pin P30
+#define PWM2PinAlter( )  {PIN_FUNC |= bPWM2_PIN_X;}                           // PWM mapping pin P31
 
 #define ForceClearPWMFIFO( ) {PWM_CTRL |= bPWM_CLR_ALL;}                      //强制清除PWM FIFO和COUNT
 #define CancelClearPWMFIFO( ) {PWM_CTRL &= ~bPWM_CLR_ALL;}                    //取消清除PWM FIFO和COUNT

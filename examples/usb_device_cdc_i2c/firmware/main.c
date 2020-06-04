@@ -4,7 +4,7 @@
 * License		: MIT
 * Version		: V1.0
 * Date			: 2018/03/17
-* Description		: CH551做USB转I2C，使用CDC-ACM协议
+* Description		: CH551 converts USB to I2C, using CDC-ACM protocol
 *******************************************************************************/
 #include <stdint.h>
 #include <stdio.h>

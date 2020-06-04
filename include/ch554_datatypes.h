@@ -19,10 +19,11 @@ Header file for CH554 microcontrollers.
 #ifndef NULL
 #define NULL    0
 #endif
-
+/*
 #ifndef BOOL
 typedef bit                             BOOL;
 #endif
+*/
 #ifndef UINT8
 typedef unsigned char                   UINT8;
 #endif

@@ -9,6 +9,7 @@ TARGET = usb_device_cdc
 # This takes a total of 256bytes, so there are 768 bytes left.
 XRAM_SIZE = 0x0300
 XRAM_LOC = 0x0100
+FREQ_SYS = 24000000
 
 C_FILES = \
 	main.c \
