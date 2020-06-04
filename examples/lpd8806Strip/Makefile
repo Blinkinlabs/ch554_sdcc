@@ -1,11 +1,8 @@
-TARGET = adc
+TARGET = lpd8806strip
 
 C_FILES = \
 	main.c \
-
-	../../include/debug.c \
-	../../include/adc.c
-
+	../../include/debug.c
 
 pre-flash:
 	

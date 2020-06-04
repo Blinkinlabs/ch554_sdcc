@@ -4,7 +4,7 @@
 * Version            : V1.0
 * Date               : 2017/01/20
 * Description        : CH554 DEBUG Interface
-               CH554 main frequency modification, delay function definition
+                     CH554 main frequency modification, delay function definition
                      Serial port 0 and serial port 1 initialization
                      Serial port 0 and serial port 1 transceiver subfunctions
                      Watchdog initialization			 
@@ -140,6 +140,7 @@ void	mDelaymS( uint16_t n )                                                  // 
 /*******************************************************************************
 * Function Name  : CH554UART0Alter()
 * Description    : CH554 serial port 0 pin mapping, serial port mapping to P0.2 and P0.3
+
 * Input          : None
 * Output         : None
 * Return         : None
@@ -206,6 +207,7 @@ uint8_t  CH554UART0RcvByte( )
 *******************************************************************************/
 void CH554UART0SendByte(uint8_t SendDat)
 {
+
         SBUF = SendDat;                                                              // Query sending, the following two statements can be used in the interrupt mode, but TI = 0 is required before sending
         while(TI ==0);
         TI = 0;
@@ -310,19 +312,22 @@ void CH554UART1SendByte(uint8_t SendDat)
 void CH554WDTModeSelect(uint8_t mode)
 {
    SAFE_MOD = 0x55;
-   SAFE_MOD = 0xaa;                                                             //进入安全模式
+   SAFE_MOD = 0xaa;                                                             //Enter Safe Mode
    if(mode){
-     GLOBAL_CFG |= bWDOG_EN;                                                    //启动看门狗复位
+     GLOBAL_CFG |= bWDOG_EN;                                                    //Start watchdog reset
    }
-   else GLOBAL_CFG &= ~bWDOG_EN;	                                            // Start watchdog only as a timer
-   SAFE_MOD = 0x00;                                                             //退出安全模式
-   WDOG_COUNT = 0;                                                              //看门狗赋初值
+
+   else GLOBAL_CFG &= ~bWDOG_EN;	                                            //Start watchdog only as a timer
+   SAFE_MOD = 0x00;                                                             //exit safe Mode
+   WDOG_COUNT = 0;                                                              //Watchdog assignment initial value
+
 }
 
 /*******************************************************************************
 * Function Name  : CH554WDTFeed(uint8_t tim)
-* Description    : CH554看门狗定时时间设置
-* Input          : uint8_t tim Watchdog reset time setting
+* Description    : CH554 watchdog timer time setting
+* Input          : uint8_t tim watchdog reset time setting
+
                    00H(6MHz)=2.8s
                    80H(6MHz)=1.4s
 * Output         : None
@@ -330,5 +335,7 @@ void CH554WDTModeSelect(uint8_t mode)
 *******************************************************************************/
 void CH554WDTFeed(uint8_t tim)
 {
+
    WDOG_COUNT = tim;                                                            // Watchdog counter assignment
+
 }
