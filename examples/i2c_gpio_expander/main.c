@@ -40,9 +40,11 @@ uint8_t mdio_data_h;
 uint8_t mdio_data_l;
 uint8_t gp_mem;
 
-uint8_t temp_var;
-
 //! @brief I2C device register map
+//!
+//! Note that the SFRs can only be addressed in direct mode, so a shadow copy
+//! is placed in this table, and their values need to be copied in before a read
+//! operation, or copied out after a write operation.
 __idata uint8_t *regs_ptr[I2C_SLAVE_REG_COUNT] = {
     &status,                        //!< Status register
     &id,                            //!< Chip ID register
@@ -128,17 +130,79 @@ void ESP_EN_ISR(void) __interrupt (INT_NO_INT1) {
     GLOBAL_CFG |= bSW_RESET;
 }
 
+// @brief Measure the system voltage
+//
+// This function measures the current system voltage, by sampling an assumed 1.2V
+// reference and inverting the result.
+//
+// \return System voltage, in 10ths of a volt
+uint8_t measure_system_voltage() {
+    uint8_t val;
+
+    // Disable the ADC interrupt
+    IE_ADC = 0;
+
+    // Enable the ADC, using the slow clock setting
+    ADC_CFG = bADC_EN;
+
+    // Select the input channel 00=P1.1, 01=P1.4, 10=P1.5, 11=P3.2
+    ADC_CHAN1 = 0;  
+    ADC_CHAN0 = 1; 
+
+    // Start a conversion
+    ADC_START = 1;
+
+    // Wait for the result
+    while(ADC_START == 1) {}
+
+    // Read the 1.2V input, in terms of the system voltage
+    // val = 1.2/Vcc*255
+    val = ADC_DATA;
+
+    // Then VCC (in 1/10s of V) can be calculated as:
+    // Vcc = (1.2*255*10)/val = 3060/val
+    return 3060/val;
+}
+
+#define STABLE_VOLTAGE 31           // System voltage to wait for, (10ths of V)
+#define STABLE_VOLTAGE_DELAY 50     // Amount of time to delay after the system voltage has become high enough (ms)
+
+// @brief Wait for the system voltage to rise to a given setpoint
+void wait_for_stable_voltage() {
+    // If the voltage is already high enough, return immediately
+    // This path is for cases where the board is reset via the front button, or the programming interface
+    if(measure_system_voltage() >= STABLE_VOLTAGE)
+        return;
+
+    // Otherwise, wait for the system voltage to become stable
+    //  TODO: Does this need averaging?
+    while(measure_system_voltage() < 31) {}
+
+    // Then, delay for a short time to ensure stability
+    mDelaymS(STABLE_VOLTAGE_DELAY);
+}
+
 void main() {
     i2c_slave_transaction_t result;
+
+    // Put ESP_EN in open-drain mode, pulled down (disable the ESP32)
+    gpio_pin_mode(ESP_EN_PIN, ESP_EN_PORT, GPIO_MODE_OPEN_DRAIN);
+//    gpio_pin_write(ESP_EN_PIN, ESP_EN_PORT, 0);
 
     CfgFsys();
 //    mInitSTDIO();   // debug output on P3.1
 
-    // Disable ESP EN output
-    gpio_pin_mode(ESP_EN_PIN, ESP_EN_PORT, GPIO_MODE_OPEN_DRAIN);
-
+    // Initialize the programmable GPIO
+    // TODO: These ended up being fixed-function
     outputs_init();
 
+    // Wait for the system voltage to settle
+//    wait_for_stable_voltage();
+
+    // Release ESP_EN (enable the ESP32)
+//    gpio_pin_write(ESP_EN_PIN, ESP_EN_PORT, 1);
+
+    // Turn on the front panel LED
     gpio_pin_write(INDICATOR_LED_PIN, INDICATOR_LED_PORT, 0);
 
     reset_button_init();
@@ -159,6 +223,18 @@ void main() {
         result = i2c_slave_poll();
 
         // And handle any write callbacks
+        /*
+        P1 = p1_shadow;
+        P1_MOD_OC = p1_mod_oc_shadow;
+        P1_DIR_PU = p1_dir_pu_shadow;
+        if(status & STATUS_REG_MDIO_START) {
+            if (status & STATUS_REG_MDIO_WRITE)
+                mdio_master_write(mdio_phy_addr, mdio_phy_reg, mdio_data_h, mdio_data_l);
+            else
+                mdio_master_read(mdio_phy_addr, mdio_phy_reg, &mdio_data_h, &mdio_data_l);
+        }
+        */
+        
         if(result == I2C_SLAVE_WRITE) {
             switch(i2c_slave_reg) {
                 case STATUS_REG:

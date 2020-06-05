@@ -4,6 +4,7 @@
 *.lck
 *.autosave
 *~
+*a.out
 
 # GNU/Make
 */*.s
