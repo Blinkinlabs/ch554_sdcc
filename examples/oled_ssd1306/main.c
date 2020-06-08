@@ -26,5 +26,6 @@ void main() {
     	mDelaymS(100);
         LED = !LED;
         ssd1306Init();
+
     }
 }

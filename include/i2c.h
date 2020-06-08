@@ -11,7 +11,6 @@
 #define _I2C_H_
 
 
-
 typedef __bit bool;
 
 extern void i2c_init();
