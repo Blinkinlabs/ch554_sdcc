@@ -1,7 +1,8 @@
 TARGET = pwm
 
 C_FILES = \
-	main.c
+	main.c \
+	../../include/debug.c
 
 pre-flash:
 	

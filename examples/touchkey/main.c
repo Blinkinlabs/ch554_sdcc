@@ -3,7 +3,7 @@
 * Author             : WCH
 * Version            : V1.1
 * Date               : 2017/07/05
-* Description        : CH554 触摸按键中断和查询方式进行采集并报告当前采样通道按键状态，包含初始化和按键采样等演示函数
+* Description        : CH554Touch button interrupt and query mode to collect and report the current sampling channel button status, including demo functions such as initialization and button sampling
 *******************************************************************************/
 #include <stdint.h>
 #include <stdio.h>
@@ -15,18 +15,18 @@
 void main()
 {
     uint8_t i;
-    CfgFsys( );                                                                //CH554时钟选择配置
-    mDelaymS(5);                                                               //修改主频建议稍加延时等待芯片供电稳定
-    mInitSTDIO( );                                                             //串口0初始化
+    CfgFsys( );                                                               //CH554 clock selection configuration
+    mDelaymS(5);                                                               //It is recommended to modify the main frequency with a slight delay to wait for the chip power supply to stabilize
+    mInitSTDIO( );                                                             //Serial port 0 initialization
     UART1Setup();
 
     printf("start ...\n");
 
-    P1_DIR_PU &= 0x0C;                                                         //所有触摸通道设置为浮空输入，用不到的通道可以不设置
-    TouchKeyQueryCyl2ms();                                                     //TouchKey查询周期2ms
-    GetTouchKeyFree();                                                         //获取采样基准值
+    P1_DIR_PU &= 0x0C;                                                         //All touch channels are set as floating input, and channels that are not used can be left unset
+    TouchKeyQueryCyl2ms();                                                     //TouchKey query cycle 2ms
+    GetTouchKeyFree();                                                         //Get sampling reference value
 #if DE_PRINTF
-    for(i=KEY_FIRST;i<(KEY_LAST+1);i++)                                        //打印采样基准值
+    for(i=KEY_FIRST;i<(KEY_LAST+1);i++)                                        //Print sampling reference value
     {
         printf("Channel %02x base sample %04x\n",(uint16_t)i,KeyFree[i]);
     }
@@ -36,25 +36,25 @@ void main()
     EA = 1;
     while(1)
     {
-        if(KeyBuf)                                                               //key_buf非0，表示检测到按键按下
+        if(KeyBuf)                                                               //key_buf is non-zero, indicating that a key press was detected
         {
-            printf("INT TouchKey Channel %02x \n",(uint16_t)KeyBuf);                 //打印当前按键状态通道
-            KeyBuf	= 0;                                                           //清除按键按下标志
-            mDelaymS(100);                                                         //延时无意义，模拟单片机做按键处理
+            printf("INT TouchKey Channel %02x \n",(uint16_t)KeyBuf);                 //Print current key status channel
+            KeyBuf	= 0;                                                           //Clear key press sign
+            mDelaymS(100);                                                         //Delay is meaningless, simulate single-chip to do button processing
         }
-        mDelaymS(100);                                                           //延时无意义，模拟单片机干其他事
+        mDelaymS(100);                                                           //Delay is meaningless, imitating microcontroller to do other things
     }
 #else
     while(1)
     {
-        TouchKeyChannelQuery();                                                  //查询触摸按键状态
-        if(KeyBuf)                                                               //key_buf非0，表示检测到按键按下
+        TouchKeyChannelQuery();                                                  //Query the status of touch keys
+        if(KeyBuf)                                                               //key_buf is non-zero, indicating that a key press was detected
         {
-            printf("Query TouchKey Channel %02x \n",(uint16_t)KeyBuf);              //打印当前按键状态通道
-            KeyBuf = 0;                                                           //清除按键按下标志
-            mDelaymS(20);                                                         //延时无意义，模拟单片机做按键处理
+            printf("Query TouchKey Channel %02x \n",(uint16_t)KeyBuf);              //Print current key status channel
+            KeyBuf = 0;                                                           //Clear key press sign
+            mDelaymS(20);                                                         //Delay is meaningless, simulate single-chip to do button processing
         }
-        //       mDelaymS(100);                                                           //延时无意义，模拟单片机干其他事
+        //       mDelaymS(100);                                                           //Delay is meaningless, imitating microcontroller to do other things
     }
 #endif
 }
