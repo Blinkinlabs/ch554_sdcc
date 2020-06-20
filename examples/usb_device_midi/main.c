@@ -25,7 +25,7 @@ const uint8_t *  pDescr;													   //USB configuration flag
 USB_SETUP_REQ   SetupReqBuf;												   //Temporary Setup package
 #define UsbSetupBuf	 ((PUSB_SETUP_REQ)Ep0Buffer)
 
-/ * Device descriptor * /
+/* Device descriptor */
 __code uint8_t DevDesc[] = {	
 				0x12,0x01,0x10,0x01,
 				0x00,0x00,0x00,DEFAULT_ENDP0_SIZE, /* Define it in interface level */
