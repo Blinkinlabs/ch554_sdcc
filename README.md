@@ -1,5 +1,6 @@
-# CH554 software development kit for SDCC forked from the excellent work done by blinkinlabs.
+# CH554 software development kit for SDCC [![Build Status](https://travis-ci.org/Blinkinlabs/ch554_sdcc.svg?branch=master)](https://travis-ci.org/Blinkinlabs/ch554_sdcc)
 
+![image](https://raw.githubusercontent.com/Blinkinlabs/ch554_sdcc/master/documentation/devboard.png)
 
 This is a port of the CH554 SDK, from Keil C51 to SDCC.
 
@@ -59,7 +60,7 @@ You'll need xcode (for make), as well as SDCC. ISP Tool will be same as Linux's.
 
 Then clone this repository, and build the examples:
 
-	git clone https://github.com/rabid-inventor/ch55x_sdcc.git
+	git clone https://github.com/Blinkinlabs/ch554_sdcc.git
 	cd ch55x_sdcc/examples
 	make
 
@@ -209,7 +210,7 @@ Here is a list of the different peripheral drivers and examples that need to be 
 | Timer2 | Extended Timer 2 | not started |
 | TouchKey | Capacitive touch peripheral | in progress |
 | Chip ID | Read the built-in chip ID | not started |
-| Type-C | USB C power negotiation peripheral | in progress |
+| Type-C | USB C power negotiation peripheral | not started |
 | USB\Device | USB device peripheral: HID (?) profile | not started |
 | S_CDC | USB device peripheral: CDC profile | complete |
 | U_DISK | USB device peripheral: USB mass storage device profile | not started |
