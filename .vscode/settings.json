@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+
+        "[SubtitleTools.com] Main.C": "cpp",
+        "Main.C": "cpp",
+        "ADC.C": "cpp",
+        "type_c.C": "cpp"
+
+    }
+}

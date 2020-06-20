@@ -10,10 +10,18 @@
 #include <stdint.h>
 #include "i2c.h"
 
+#ifdef I2C_DEFAULT
 #define I2C_SDAT	P3_4
 #define I2C_SCLK	P3_3
+#endif
 
+#ifndef I2C_SDAT
+#define I2C_SDAT	P3_4
+#endif
 
+#ifndef I2C_SCLK
+#define I2C_SCLK	P3_3
+#endif
 
 void i2c_init()
 { /* GPIO port initial */
@@ -50,7 +58,7 @@ void i2c_stop()
 	i2c_delay();
 }
 
-void i2c_write(uint8_t data)
+void i2c_write(unsigned char data)
 {
 	int i;
 	
@@ -67,7 +75,7 @@ void i2c_write(uint8_t data)
 	}
 }
 
-uint8_t i2c_read()
+unsigned char i2c_read()
 {
 	int i;
 	uint8_t ret = 0;

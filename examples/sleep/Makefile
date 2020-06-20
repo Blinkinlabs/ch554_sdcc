@@ -1,4 +1,4 @@
-TARGET = pwm
+TARGET = sleep
 
 C_FILES = \
 	main.c \

@@ -13,14 +13,14 @@ SBIT(LED, 0x90, LED_PIN);
 
 void main() {
     while(1) {
-        LED = !LED;                        //P17闪烁
+        LED = !LED;                        //P17 flashes
 
         mDelaymS(50);
-        if(EnableIAP == 0)                 //P16引脚检测到低电平跳转
+        if(EnableIAP == 0)                 //P16 pin detected low level jump
             break;
     }
 
-    EA = 0;                                //关闭总中断，必加
+    EA = 0;                                //Close the total interrupt, must add
     mDelaymS(100);
 
     bootloader();

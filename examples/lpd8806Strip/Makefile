@@ -1,4 +1,4 @@
-TARGET = pwm
+TARGET = lpd8806strip
 
 C_FILES = \
 	main.c \

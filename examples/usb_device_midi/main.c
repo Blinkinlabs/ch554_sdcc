@@ -15,17 +15,17 @@
 #include <ch554_usb.h>
 #include <debug.h>
 
-__xdata __at (0x0000) uint8_t  Ep0Buffer[DEFAULT_ENDP0_SIZE];	   //端点0 OUT&IN缓冲区，必须是偶地址
-__xdata __at (0x0040) uint8_t  Ep1Buffer[DEFAULT_ENDP1_SIZE];	   //端点1上传缓冲区
-__xdata __at (0x0080) uint8_t  Ep2Buffer[2*MAX_PACKET_SIZE];	//端点2 IN & OUT缓冲区,必须是偶地址
+__xdata __at (0x0000) uint8_t  Ep0Buffer[DEFAULT_ENDP0_SIZE];	   // Endpoint 0 OUT & IN buffer, must be even address
+__xdata __at (0x0040) uint8_t  Ep1Buffer[DEFAULT_ENDP1_SIZE];	   // Endpoint 1 upload buffer
+__xdata __at (0x0080) uint8_t  Ep2Buffer[2*MAX_PACKET_SIZE];	//Endpoint 2 IN & OUT buffer, must be an even address
 
 uint16_t SetupLen;
 uint8_t   SetupReq,Count,UsbConfig;
-const uint8_t *  pDescr;													   //USB配置标志
-USB_SETUP_REQ   SetupReqBuf;												   //暂存Setup包
+const uint8_t *  pDescr;													   //USB configuration flag
+USB_SETUP_REQ   SetupReqBuf;												   //Temporary Setup package
 #define UsbSetupBuf	 ((PUSB_SETUP_REQ)Ep0Buffer)
 
-/*设备描述符*/
+/* Device descriptor */
 __code uint8_t DevDesc[] = {	
 				0x12,0x01,0x10,0x01,
 				0x00,0x00,0x00,DEFAULT_ENDP0_SIZE, /* Define it in interface level */
@@ -37,7 +37,7 @@ __code uint8_t CfgDesc[] ={
 	0x09,0x02,sizeof(CfgDesc) & 0xff,sizeof(CfgDesc) >> 8,
 	0x02,0x01,0x00,0x80,0x32,			 //配置描述符（两个接口）
 	//以下为接口0（音频接口）描述符
-	0x09,0x04,0x00,0x00,0x00,0x01,0x01,0x00,0x00,	// USB Audio Class 描述，无端点
+	0x09,0x04,0x00,0x00,0x00,0x01,0x01,0x00,0x00,	// USB Audio Class description, no endpoint
 	//以下为功能描述符
 	0x09,0x24,0x01,0x00,0x01,0x09,0x00,0x01,0x01,	//功能描述符，长度大端
 	//以下为接口1（MIDI接口描述符）
@@ -59,13 +59,13 @@ __code uint8_t CfgDesc[] ={
 };
 /*字符串描述符*/
 unsigned char  __code LangDes[]={0x04,0x03,0x09,0x04};		   //语言描述符
-unsigned char  __code SerDes[]={								 //序列号字符串描述符
+unsigned char  __code SerDes[]={								 // Serial number string descriptor
 					0x14,0x03,
 					'2',0x00,'0',0x00,'1',0x00,'8',0x00,'-',0x00,
 					'3',0x00,'-',0x00,
 					'2',0x00,'7',0x00
 							   };
-unsigned char  __code Prod_Des[]={								//产品字符串描述符
+unsigned char  __code Prod_Des[]={								// Product string descriptor
 					0x14,0x03,
 					'C',0x00,'H',0x00,'5',0x00,'5',0x00,'x',0x00,'M',0x00,
 					'I',0x00,'D',0x00,'I',0x00,
@@ -167,7 +167,7 @@ void Config_Uart1(uint8_t *cfg_uart)
 #endif
 /*******************************************************************************
 * Function Name  : DeviceInterrupt()
-* Description	: CH55xUSB中断处理函数
+* Description	:CH55xUSB interrupt processing function
 *******************************************************************************/
 void DeviceInterrupt(void) __interrupt (INT_NO_USB)					   //USB中断服务程序,使用寄存器组1
 {
