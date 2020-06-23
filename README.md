@@ -10,6 +10,9 @@ The CH55x family of microcontrollers is notable because it has both an extremely
 
 Contains tranlated comments for esier understanding how the ch55x range operate and extra examples included.
 
+If you want a gentler introduction to CH55x programming, this Arduino port might be worth a look:
+https://github.com/DeqingSun/ch55xduino
+
 # Getting Started
 
 ## Get the toolchain: Windows
