@@ -19,11 +19,10 @@ https://github.com/DeqingSun/ch55xduino
 
 You'll need a recent version of SDCC, as well as mingw for make, and likely also git-bash for the bash shell. Additionally, you'll need WCHISPTOOL to upload code to the chips.
 
-
 * [git for windows](https://github.com/git-for-windows/git/releases/download/v2.15.1.windows.2/Git-2.15.1.2-64-bit.exe)
 * [SDCC 3.6.0](https://sourceforge.net/projects/sdcc/files/latest/download?source=files)
 * [mingw installer](https://downloads.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe)
-* [WCHISPTOOL](http://wch.cn/download/WCHISPTool_Setup_exe.html)
+* [WCHISPTOOL](http://wch.cn/download/WCHISPTool_Setup_exe.html) (see note below)
 
 TODO: How to set up the enviroment to find these bits automatically
 
@@ -39,21 +38,20 @@ Once the tools are installed, add the following lines to the end of your .bashrc
 
 TODO: Use standalone mingw tools instead of the ones from Qt
 
+Note: [LibreCH551](https://github.com/rgwan/librech551) works with the CH554, and can be used in place of the vendor-provided WCHISPTOOL on Windows. A big advantage of the open tools is that they can be automated, rather than manually clicking on things in the vendor tool. Please see the respective project pages for up-to-date installation instructions, as you'll likely need to bind the VID/PID pair for your specific WCH chip to the LibUSB using Zadig. Another tool is [ch552tool](https://github.com/MarsTechHAN/ch552tool).
+
 ## Get the toolchain: Linux
 
 For Debian-based systems, this should work:
 
 	sudo apt-install build-essential sdcc
 
-We got a open-source implementation of this ISP Tool. You will get it from the following link:
+There are multiple open source tools for loading firmware onto the CH55x chip:
 
 * [LibreCH551](https://github.com/rgwan/librech551)
+* [ch552tool](https://github.com/MarsTechHAN/ch552tool)
 
-It works fine on CH551 and CH554.
-
-The Makefile has "flash" operation, you have a convenient way to flash your chip. This program and operation also works on Windows (need Zadig to install driver) and Mac OS.
-
-The usb-device-cdc-i2c example show you how to have a in-application firmware upgrade, it will make use of prelude flash operation..
+These tools are reported to work with CH554 as well as CH552/CH551.
 
 ## Get the toolchain: macOs
 
@@ -69,7 +67,8 @@ Then clone this repository, and build the examples:
 
 If everything is set up correctly, all of the examples should now be built.
 
-Use the 'WCHISPTool' to flash an image onto the target device.
+On Windows: Use the 'WCHISPTool' to flash an image onto the target device.
+On Linux/Mac (or Windows after you have installed and configured LibreCH551), you can run 'make flash' to load the example onto your board.
 
 ## Port a file from Keil C51 syntax to SDCC
 
