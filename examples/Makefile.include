@@ -21,7 +21,7 @@ XRAM_LOC = 0x0000
 endif
 
 ifndef CODE_SIZE
-CODE_SIZE = 0x2800
+CODE_SIZE = 0x3800
 endif
 
 ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
