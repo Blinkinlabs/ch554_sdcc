@@ -161,8 +161,8 @@ void CH554UART0Alter()
 *******************************************************************************/
 void	mInitSTDIO( )
 {
-    volatile uint32_t x;
-    volatile uint8_t x2;
+    uint32_t x;
+    uint8_t x2;
 
     SM0 = 0;
     SM1 = 1;
