@@ -4,7 +4,7 @@
 CC = sdcc
 OBJCOPY = objcopy
 PACK_HEX = packihx
-WCHISP = wchisptool
+WCHISP ?= wchisptool -g -f
 
 #######################################################
 
@@ -26,7 +26,7 @@ endif
 
 ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-CFLAGS := -V -mmcs51 --model-small \
+CFLAGS := -V -mmcs51 --model-small --acall-ajmp\
 	--xram-size $(XRAM_SIZE) --xram-loc $(XRAM_LOC) \
 	--code-size $(CODE_SIZE) \
 	-I$(ROOT_DIR)../include -DFREQ_SYS=$(FREQ_SYS) \
@@ -54,7 +54,7 @@ $(TARGET).bin: $(TARGET).ihx
 	$(OBJCOPY) -I ihex -O binary $(TARGET).ihx $(TARGET).bin
 	
 flash: $(TARGET).bin pre-flash
-	$(WCHISP) -f $(TARGET).bin -g
+	$(WCHISP) $(TARGET).bin
 
 .DEFAULT_GOAL := all
 all: $(TARGET).bin $(TARGET).hex
