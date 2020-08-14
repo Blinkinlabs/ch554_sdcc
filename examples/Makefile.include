@@ -4,7 +4,7 @@
 CC = sdcc
 OBJCOPY = objcopy
 PACK_HEX = packihx
-WCHISP = wchisptool
+WCHISP ?= wchisptool -g -f
 
 #######################################################
 
@@ -54,7 +54,7 @@ $(TARGET).bin: $(TARGET).ihx
 	$(OBJCOPY) -I ihex -O binary $(TARGET).ihx $(TARGET).bin
 	
 flash: $(TARGET).bin pre-flash
-	$(WCHISP) -f $(TARGET).bin -g
+	$(WCHISP) $(TARGET).bin
 
 .DEFAULT_GOAL := all
 all: $(TARGET).bin $(TARGET).hex
