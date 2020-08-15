@@ -579,7 +579,9 @@ main()
                 USBByteCount--;
 
                 if(USBByteCount==0)
+#ifdef DEBUG
                     dataRecievedCopFlag = 1;
+#endif
                     UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK;
 
             }
@@ -609,7 +611,7 @@ main()
                 }
             }
         }
-
+#ifdef DEBUG
     if(dataRecievedCopFlag){
         CH554UART1SendByte((char)'H');
         if (strcmp((const signed char*)recievedData, (const signed char*)'OK\n') == 1)
@@ -622,6 +624,6 @@ main()
 
 
     }
-
+#endif                                  // DEBUG
     }
 }
