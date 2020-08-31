@@ -745,7 +745,7 @@ ASM example:
        MOV  R7,#xxH
  LOOP: MOVX A,@DPTR ;DPTR0
        INC  DPTR    ;DPTR0, if need
-       DB   0A5H    ;MOVX @DPTR1,A & INC DPTR1
+       .DB  0xA5    ;MOVX @DPTR1,A & INC DPTR1
        DJNZ R7,LOOP
 */
 
