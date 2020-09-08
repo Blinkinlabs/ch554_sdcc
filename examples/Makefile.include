@@ -8,21 +8,13 @@ WCHISP ?= wchisptool -g -f
 
 #######################################################
 
-ifndef FREQ_SYS
-FREQ_SYS = 16000000
-endif
+FREQ_SYS ?= 24000000
 
-ifndef XRAM_SIZE
-XRAM_SIZE = 0x0400
-endif
+XRAM_SIZE ?= 0x0400
 
-ifndef XRAM_LOC
-XRAM_LOC = 0x0000
-endif
+XRAM_LOC ?= 0x0000
 
-ifndef CODE_SIZE
-CODE_SIZE = 0x3800
-endif
+CODE_SIZE ?= 0x3800
 
 ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
