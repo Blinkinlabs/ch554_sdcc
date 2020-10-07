@@ -1,0 +1,28 @@
+name: Linux build (default SDCC)
+
+on:
+  push:
+    branches:
+      - master
+      - github_actions
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - master
+      - github_actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+
+    - name: Install SDCC
+      run: sudo apt-get install -y sdcc
+
+    - name: Build examples
+      run: make
+      working-directory: examples
