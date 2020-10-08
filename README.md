@@ -1,4 +1,4 @@
-# CH554 software development kit for SDCC [![Build Status](https://travis-ci.org/Blinkinlabs/ch554_sdcc.svg?branch=master)](https://travis-ci.org/Blinkinlabs/ch554_sdcc)
+# CH554 software development kit for SDCC ![Linux build](https://github.com/Blinkinlabs/ch554_sdcc/workflows/Linux%20build/badge.svg)
 
 ![image](https://raw.githubusercontent.com/Blinkinlabs/ch554_sdcc/master/documentation/devboard.png)
 

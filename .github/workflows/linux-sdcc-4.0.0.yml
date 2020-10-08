@@ -1,0 +1,30 @@
+name: Linux build (SDCC 4.0.0)
+
+on:
+  push:
+    branches:
+      - master
+      - github_actions
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - master
+      - github_actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+
+    - name: Download SDCC
+      run: |
+        wget https://sourceforge.net/projects/sdcc/files/sdcc-linux-amd64/4.0.0/sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2
+        tar -xf sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2
+        echo `pwd`/sdcc-4.0.0/bin >> $GITHUB_PATH
+    - name: Build examples
+      run: make
+      working-directory: examples
