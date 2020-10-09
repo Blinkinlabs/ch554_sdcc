@@ -1,7 +1,0 @@
-sudo: required
-dist: bionic
-
-install:
-  - sudo apt-get -y install make sdcc
-
-script: make -C examples/
