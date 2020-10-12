@@ -19,7 +19,8 @@ __xdata __at (0x0080) uint8_t  Ep2Buffer[2*MAX_PACKET_SIZE];        //Endpoint 2
 
 uint16_t SetupLen;
 uint8_t   SetupReq,Count,UsbConfig;
-const uint8_t *  pDescr;                                                       //USB configuration flag
+const uint8_t *  pDescr;
+
 USB_SETUP_REQ   SetupReqBuf;                                                   //Temporary Setup package
 #define UsbSetupBuf     ((PUSB_SETUP_REQ)Ep0Buffer)
 
@@ -29,10 +30,32 @@ USB_SETUP_REQ   SetupReqBuf;                                                   /
 
 
 /*设备描述符*/
+/*
 __code uint8_t DevDesc[] = {0x12,0x01,0x10,0x01,0x02,0x00,0x00,DEFAULT_ENDP0_SIZE,
                             0x86,0x1a,0x22,0x57,0x00,0x01,0x01,0x02,
                             0x03,0x01
                            };
+*/
+
+// device descriptor
+
+__code USB_DEV_DESCR DevDesc = {
+    .bLength = 18,
+    .bDescriptorType = USB_DESCR_TYP_DEVICE,
+    .bcdUSBH = 0x01, .bcdUSBL = 0x10,
+    .bDeviceClass =  USB_DEV_CLASS_COMMUNIC,
+    .bDeviceSubClass = 0,
+    .bDeviceProtocol = 0,
+    .bMaxPacketSize0 = DEFAULT_ENDP0_SIZE,
+    .idVendorH = 0x1a, .idVendorL = 0x86,
+    .idProductH = 0x57, .idProductL = 0x22,
+    .bcdDeviceH = 0x01, .bcdDeviceL = 0x00,
+    .iManufacturer = 1,                 // string descriptors
+    .iProduct = 2,
+    .iSerialNumber = 3,
+    .bNumConfigurations = 1
+};
+
 __code uint8_t CfgDesc[] ={
     0x09,0x02,0x43,0x00,0x02,0x01,0x00,0xa0,0x32,             //Configuration descriptor (two interfaces)
 // The following is the interface 0 (CDC interface) descriptor
@@ -220,8 +243,9 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                     case USB_GET_DESCRIPTOR:
                         switch(UsbSetupBuf->wValueH)
                         {
-                        case 1:                                                       //设备描述符
-                            pDescr = DevDesc;                                         //把设备描述符送到要发送的缓冲区
+                        case USB_DESCR_TYP_DEVICE:
+                            //pDescr = DevDesc;
+                            pDescr = (uint8_t *)&DevDesc;
                             len = sizeof(DevDesc);
                             break;
                         case 2:                                                        //配置描述符
