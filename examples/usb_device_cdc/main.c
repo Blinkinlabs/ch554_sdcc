@@ -83,15 +83,11 @@ unsigned char  __code Prod_Des[]={
 
 */
 
-#define PROD_DESC (u"CH55x_CDC")
-// don't use sizeof(DESC/2): It will put a copy of the string in CSEG 
 #define PDESC_LEN 9
-
-//Product string descriptor
 __code struct {uint8_t bLength; uint8_t bDscType; uint16_t string[PDESC_LEN];} Prod_Des = {
     .bLength = sizeof(Prod_Des),
     .bDscType = USB_DESCR_TYP_STRING,
-    .string = PROD_DESC
+    .string = u"CH55x_CDC"
 };
 
 /*
@@ -101,15 +97,11 @@ unsigned char  __code Manuf_Des[]={
 };
 */
 
-#define MANUF_DESC (u"WCH")
-// don't use sizeof(DESC/2): It will put a copy of the string in CSEG 
 #define MDESC_LEN 3
-
-//Product string descriptor
 __code struct {uint8_t bLength; uint8_t bDscType; uint16_t string[MDESC_LEN];} Manuf_Des = {
     .bLength = sizeof(Manuf_Des),
     .bDscType = USB_DESCR_TYP_STRING,
-    .string = MANUF_DESC
+    .string = u"WCH"
 };
 
 //cdc参数
