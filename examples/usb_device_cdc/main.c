@@ -52,7 +52,7 @@ __code USB_DEV_DESCR DevDesc = {
     .bcdDeviceH = 0x01, .bcdDeviceL = 0x00,
     .iManufacturer = 1,                 // string descriptors
     .iProduct = 2,
-    .iSerialNumber = 3,
+    .iSerialNumber = 0,
     .bNumConfigurations = 1
 };
 
@@ -73,20 +73,43 @@ __code uint8_t CfgDesc[] ={
 };
 /*字符串描述符*/
 unsigned char  __code LangDes[]={0x04,0x03,0x09,0x04};           //Language descriptor
-unsigned char  __code SerDes[]={                                 //Serial number string descriptor
-                                                                 0x14,0x03,
-                                                                 0x32,0x00,0x30,0x00,0x31,0x00,0x37,0x00,0x2D,0x00,
-                                                                 0x32,0x00,0x2D,0x00,
-                                                                 0x32,0x00,0x35,0x00
-                               };
-unsigned char  __code Prod_Des[]={                                //Product string descriptor
+
+/*
+unsigned char  __code Prod_Des[]={
                                                                   0x14,0x03,
                                                                   0x43,0x00,0x48,0x00,0x35,0x00,0x35,0x00,0x34,0x00,0x5F,0x00,
                                                                   0x43,0x00,0x44,0x00,0x43,0x00,
                                  };
+
+*/
+
+#define PROD_DESC (u"CH55x_CDC")
+// don't use sizeof(DESC/2): It will put a copy of the string in CSEG 
+#define PDESC_LEN 9
+
+//Product string descriptor
+__code struct {uint8_t bLength; uint8_t bDscType; uint16_t string[PDESC_LEN];} Prod_Des = {
+    .bLength = sizeof(Prod_Des),
+    .bDscType = USB_DESCR_TYP_STRING,
+    .string = PROD_DESC
+};
+
+/*
 unsigned char  __code Manuf_Des[]={
     0x0A,0x03,
     0x5F,0x6c,0xCF,0x82,0x81,0x6c,0x52,0x60,
+};
+*/
+
+#define MANUF_DESC (u"WCH")
+// don't use sizeof(DESC/2): It will put a copy of the string in CSEG 
+#define MDESC_LEN 3
+
+//Product string descriptor
+__code struct {uint8_t bLength; uint8_t bDscType; uint16_t string[MDESC_LEN];} Manuf_Des = {
+    .bLength = sizeof(Manuf_Des),
+    .bDscType = USB_DESCR_TYP_STRING,
+    .string = MANUF_DESC
 };
 
 //cdc参数
@@ -252,7 +275,7 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                             pDescr = CfgDesc;                                          //把设备描述符送到要发送的缓冲区
                             len = sizeof(CfgDesc);
                             break;
-                        case 3:
+                        case USB_DESCR_TYP_STRING:
                             if(UsbSetupBuf->wValueL == 0)
                             {
                                 pDescr = LangDes;
@@ -260,18 +283,15 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                             }
                             else if(UsbSetupBuf->wValueL == 1)
                             {
-                                pDescr = Manuf_Des;
+                                //pDescr = Manuf_Des;
+                                pDescr = (uint8_t *)Manuf_Des;
                                 len = sizeof(Manuf_Des);
                             }
                             else if(UsbSetupBuf->wValueL == 2)
                             {
-                                pDescr = Prod_Des;
+                                //pDescr = (uint8_t *)&Prod_Des;
+                                pDescr = (uint8_t *)Prod_Des;
                                 len = sizeof(Prod_Des);
-                            }
-                            else
-                            {
-                                pDescr = SerDes;
-                                len = sizeof(SerDes);
                             }
                             break;
                         default:
@@ -569,6 +589,7 @@ void Uart1_ISR(void) __interrupt (INT_NO_UART1)
     }
 
 }
+
 //主函数
 main()
 {
