@@ -93,32 +93,41 @@ void	mDelaymS( uint16_t n )                                                  // 
 	}
 }                                         
 
-#if SDCC < 370
-void putchar(char c)
-{
-    while (!TI); /* assumes UART is initialized */
-    TI = 0;
-    SBUF = c;
-}
-
-char getchar() {
-    while(!RI); /* assumes UART is initialized */
-    RI = 0;
-    return SBUF;
-}
-#else
+#pragma callee_saves putchar
 int putchar(int c)
 {
-    while (!TI); /* assumes UART is initialized */
+    /*
+    while (!TI);            // assumes UART is initialized
     TI = 0;
     SBUF = c & 0xFF;
 
     return c;
+    */
+    __asm
+    1$:
+    jnb _TI, 1$
+    clr _TI
+    mov _SBUF, dpl
+    __endasm;
+
+    return c;
 }
 
-int getchar() {
-    while(!RI); /* assumes UART is initialized */
+#pragma callee_saves getchar
+int getchar() __naked
+{
+    /*
+    while(!RI);             // assumes UART is initialized
     RI = 0;
     return SBUF;
+    */
+    __asm
+    1$:
+    jnb _RI, 1$
+    clr _RI
+
+    mov dpl, _SBUF
+    mov dph, #0
+    ret
+    __endasm;
 }
-#endif

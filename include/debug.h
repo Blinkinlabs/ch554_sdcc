@@ -170,13 +170,8 @@ inline void CH554UART1SendByte(uint8_t SendDat)
         U1TI = 0;
 }
 
-#if SDCC < 370
-void putchar(char c);
-char getchar();
-#else
 int putchar(int c);
 int getchar(void);
-#endif
 
 /*******************************************************************************
 * Function Name  : CH554WDTModeSelect(uint8_t mode)
