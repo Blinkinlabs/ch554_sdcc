@@ -93,8 +93,12 @@ void	mDelaymS( uint16_t n )                                                  // 
 	}
 }                                         
 
+// printf will use putchar function
 #pragma callee_saves putchar
-int putchar(int c)
+// putchar takes a single argument:
+// char, or int for sdcc version 3.7.0 and later
+// in both cases, only one byte, DPL, is copied to SBUF
+void putchar()
 {
     /*
     while (!TI);            // assumes UART is initialized
@@ -107,14 +111,15 @@ int putchar(int c)
     1$:
     jnb _TI, 1$
     clr _TI
+
     mov _SBUF, dpl
     __endasm;
-
-    return c;
 }
 
 #pragma callee_saves getchar
-int getchar() __naked
+// getchar returns char or int depending on the sdcc version
+// lie to sdcc and declare it as void but return in DPL
+void getchar()
 {
     /*
     while(!RI);             // assumes UART is initialized
@@ -128,6 +133,6 @@ int getchar() __naked
 
     mov dpl, _SBUF
     mov dph, #0
-    ret
     __endasm;
 }
+

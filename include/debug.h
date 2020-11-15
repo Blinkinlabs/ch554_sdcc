@@ -170,9 +170,6 @@ inline void CH554UART1SendByte(uint8_t SendDat)
         U1TI = 0;
 }
 
-int putchar(int c);
-int getchar(void);
-
 /*******************************************************************************
 * Function Name  : CH554WDTModeSelect(uint8_t mode)
 * Description    : CH554 watchdog mode selection
