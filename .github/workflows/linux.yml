@@ -14,7 +14,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # need ubuntu 20 for sdcc-3.8 package since ubuntu 18 has old sdcc-3.5
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Check out
