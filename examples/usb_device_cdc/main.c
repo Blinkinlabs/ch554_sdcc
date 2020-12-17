@@ -176,6 +176,7 @@ void USBDeviceEndPointCfg()
     UEP4_1_MOD = 0X40;                                                         //Endpoint 1 upload buffer; endpoint 0 single 64-byte send and receive buffer
     UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;                                 //Manual flip, OUT transaction returns ACK, IN transaction returns NAK
 }
+
 /*******************************************************************************
 * Function Name  : Config_Uart1(uint8_t *cfg_uart)
 * Description    : Configure serial port 1 parameters
@@ -183,16 +184,20 @@ void USBDeviceEndPointCfg()
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void Config_Uart1(uint8_t *cfg_uart)
+inline void Config_Uart1(uint8_t *cfg_uart)
 {
     uint32_t uart1_buad = 0;
+    // why not: uint32_t uart1_buad = *(uint32_t *)cfg_uart;
     *((uint8_t *)&uart1_buad) = cfg_uart[0];
     *((uint8_t *)&uart1_buad+1) = cfg_uart[1];
     *((uint8_t *)&uart1_buad+2) = cfg_uart[2];
     *((uint8_t *)&uart1_buad+3) = cfg_uart[3];
-    SBAUD1 = 256 - FREQ_SYS/16/uart1_buad; //  SBAUD1 = 256 - Fsys / 16 / baud rate
+
+    //  SBAUD1 = 256 - Fsys / 16 / baud rate, rounded to int
+    SBAUD1 = 256 - ((FREQ_SYS/8/uart1_buad) + 1) /2;
     IE_UART1 = 1;
 }
+
 /*******************************************************************************
 * Function Name  : DeviceInterrupt()
 * Description    : CH559USB interrupt processing function
