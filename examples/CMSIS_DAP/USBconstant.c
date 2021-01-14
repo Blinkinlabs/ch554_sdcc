@@ -6,18 +6,22 @@
 
 
 //Device descriptor
-__code uint8_t DevDesc[] = {
-    0x12,0x01,
-    0x10,0x01,  //USB spec release number in BCD format, USB1.1 (0x10, 0x01).
-    0x00,0x00,0x00, //bDeviceClass, bDeviceSubClass, bDeviceProtocol
-    DEFAULT_ENDP0_SIZE, //PACKET_SIZE
-    0x09,0x12,0x5D,0xC5, // VID PID
-    0x00,0x01,  //version
-    0x01,0x02,0x03, //bString
-    0x01    //bNumConfigurations
+__code USB_DEV_DESCR DevDesc = {
+    .bLength = 18,
+    .bDescriptorType = USB_DESCR_TYP_DEVICE,
+    .bcdUSBH = 0x01, .bcdUSBL = 0x10,
+    .bDeviceClass =  0,                 // interface will define class
+    .bDeviceSubClass = 0,
+    .bDeviceProtocol = 0,
+    .bMaxPacketSize0 = DEFAULT_ENDP0_SIZE,
+    .idVendorH = 0x12, .idVendorL = 0x09,
+    .idProductH = 0xC5, .idProductL = 0x5D,
+    .bcdDeviceH = 0x01, .bcdDeviceL = 0x00,
+    .iManufacturer = 1,                 // string descriptors
+    .iProduct = 2,
+    .iSerialNumber = 0,                 // no serial number string
+    .bNumConfigurations = 1
 };
-
-__code uint16_t DevDescLen = sizeof(DevDesc);
 
 __code uint8_t CfgDesc[] ={
     0x09,0x02,sizeof(CfgDesc) & 0xff,sizeof(CfgDesc) >> 8,
@@ -68,7 +72,7 @@ __code uint8_t CfgDesc[] ={
 };
 
 
-__code uint16_t ReportDescLen = sizeof(ReportDesc);
+__code uint8_t ReportDescLen = sizeof(ReportDesc);
 
 __code uint8_t ReportDesc[] ={
     0x06, 0x00, 0xFF,   // Usage Page = 0xFF00 (Vendor Defined Page 1)
@@ -87,26 +91,23 @@ __code uint8_t ReportDesc[] ={
     0xC0                // End Collection
 };
 
-__code uint16_t CfgDescLen = sizeof(CfgDesc);
+__code uint8_t CfgDescLen = sizeof(CfgDesc);
 
 //String Descriptors
 __code uint8_t LangDes[]={0x04,0x03,0x09,0x04};           //Language Descriptor
-__code uint16_t LangDesLen = sizeof(LangDes);
-__code uint8_t SerDes[]={                                 //Serial String Descriptor
-    0x0C,0x03,
-    'C',0x00,'H',0x00,'5',0x00,'5',0x00,'x',0x00
-};
-__code uint16_t SerDesLen = sizeof(SerDes);
-__code uint8_t Prod_Des[]={                                //Produce String Descriptor
-    0x20,0x03,
-    'C',0x00,'H',0x00,'5',0x00,'5',0x00,'x',0x00,' ',0x00,
-    'C',0x00,'M',0x00,'S',0x00,'I',0x00,'S',0x00,'-',0x00
-    ,'D',0x00,'A',0x00, 'P',0x00
-};
-__code uint16_t Prod_DesLen = sizeof(Prod_Des);
+__code uint8_t LangDesLen = sizeof(LangDes);
 
-__code uint8_t Manuf_Des[]={
-    0x0E,0x03,
-    'D',0x00,'e',0x00,'q',0x00,'i',0x00,'n',0x00,'g',0x00,
+//Product String Descriptor
+__code uint16_t Prod_Des[]={
+    0x0320,                 // type and length
+    // u"CH55x CMSIS-DAP"
+    'C','H','5','5','x',' ',
+    'C','M','S','I','S','-','D','A','P'
 };
-__code uint16_t Manuf_DesLen = sizeof(Manuf_Des);
+__code uint8_t Prod_DesLen = sizeof(Prod_Des);
+
+__code uint16_t Manuf_Des[]={
+    0x0308,                 // type and length
+    'W','C','H'
+};
+__code uint8_t Manuf_DesLen = sizeof(Manuf_Des);

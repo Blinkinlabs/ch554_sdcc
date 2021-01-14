@@ -3,6 +3,8 @@
   Based on DAPLink and Deqing Sun's CH55xduino port 
   https://github.com/ARMmbed/DAPLink
 
+  Code cleanup and optimization by Ralph Doncaster
+
   DAP.h defaults:
   RST   = P30
   SWCLK = P31
@@ -19,10 +21,6 @@ void DeviceUSBInterrupt(void) __interrupt (INT_NO_USB)
 {
         USBInterrupt();
 }
-
-
-extern volatile __xdata uint8_t USBByteCountEP1;
-
 
 void main() {
     CfgFsys(); 

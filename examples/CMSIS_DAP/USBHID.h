@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+extern volatile uint8_t USBByteCountEP1;
+
 void USBInit(void);
 
 #endif

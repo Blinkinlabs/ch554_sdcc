@@ -70,10 +70,10 @@ void USB_EP0_SETUP(){
                     switch(UsbSetupBuf->wValueH)
                 {
                     case 1:            //Device Descriptor
-                        pDescr = DevDesc;                                         //Put Device Descriptor into outgoing buffer
-                        len = DevDescLen;
+                        pDescr = (uint8_t *)&DevDesc;
+                        len = sizeof(DevDesc);
                         break;
-                    case 2:            //Configure Descriptor
+                    case 2:            //Configuration Descriptor
                         pDescr = CfgDesc;                                       
                         len = CfgDescLen;
                         break;
@@ -92,16 +92,6 @@ void USB_EP0_SETUP(){
                         {
                             pDescr = Prod_Des;
                             len = Prod_DesLen;
-                        }
-                        else if(UsbSetupBuf->wValueL == 3)
-                        {
-                            pDescr = SerDes;
-                            len = SerDesLen;
-                        }
-                        else
-                        {
-                            pDescr = SerDes;
-                            len = SerDesLen;
                         }
                         break;
                     case 0x22:
