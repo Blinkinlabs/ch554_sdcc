@@ -13,7 +13,7 @@ inline void pushPull(uint8_t pinaddr)
     if (pinaddr >= 0xB0 && pinaddr < 0xB8)
         P3_MOD_OC &= ~(1 << (pinaddr - 0xB0));
     else if (pinaddr >= 0x90 && pinaddr < 0x98)
-        P3_MOD_OC &= ~(1 << (pinaddr - 0x90));
+        P1_MOD_OC &= ~(1 << (pinaddr - 0x90));
 }
 
 void main() {
@@ -22,7 +22,7 @@ void main() {
     pushPull(LED_ADDR);
 
     while (1) {
-    	mDelaymS(100);
+        mDelaymS(250);
         LED = !LED;
     }
 }
