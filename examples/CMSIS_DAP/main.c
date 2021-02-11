@@ -3,13 +3,7 @@
   Based on DAPLink and Deqing Sun's CH55xduino port 
   https://github.com/ARMmbed/DAPLink
 
-  Code cleanup and optimization by Ralph Doncaster
-
-  DAP.h defaults:
-  RST   = P30
-  SWCLK = P31
-  SWDIO = P32
-  LED   = P33
+  see DAP.h for RST, SWCLK, & SWDIO pin defines
 */
 
 #include <debug.h>
@@ -22,7 +16,19 @@ void DeviceUSBInterrupt(void) __interrupt (INT_NO_USB)
         USBInterrupt();
 }
 
+// perform USB bus reset/disconnect
+// set UDP to GPIO mode and hold low for device disconnect
+void resetUSB()
+{
+    PIN_FUNC &= ~(bUSB_IO_EN);
+    UDP = 0;
+    mDelaymS(50);
+    UDP = 1;
+    PIN_FUNC |= bUSB_IO_EN;
+}
+
 void main() {
+    resetUSB();
     CfgFsys(); 
     USBInit();
     while (1) {

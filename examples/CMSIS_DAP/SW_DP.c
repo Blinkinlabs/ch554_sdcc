@@ -27,38 +27,34 @@
 
 #include "DAP.h"
 
+volatile uint8_t swdelay;
+
+#if 0
 #define SW_CLOCK_CYCLE() \
-  SWK = 1; SWK = 0;
+  while(!TF2); SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;              \
+  while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
+#endif
+#define SW_CLOCK_CYCLE() \
+  SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
+#if 0
 #define SW_WRITE_BIT(bits) \
-  SWD = (bits)&1; SWK = 1; SWK = 0;
+  SWD = (bits)&1;          \
+  while(!TF2); SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;\
+  while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
+#endif
+#define SW_WRITE_BIT(bits) \
+  SWD = (bits)&1; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
-// data from target was clocked out on last SWK rising edge
+#if 0
+ data from target was clocked out on last SWK rising edge
 #define SW_READ_BIT(bits) \
-  bits = SWD; SWK = 1; SWK = 0;
-
-/** Setup SWD I/O pins: SWCLK, SWDIO, and nRESET.
-Configures the DAP Hardware I/O pins for Serial Wire Debug (SWD) mode:
- - SWCLK low, SWDIO, nRESET high.
-*/
-void PORT_SWD_SETUP(void)
-{
-    // P3_MOD_OC & P3_DIR_PU = 0xFF at reset
-    
-    // set P3.1 to push-pull
-    P3_MOD_OC &= ~(1 << 1);
-    //P3_MOD_OC = P3_MOD_OC | (1 << 1);
-    //P3_DIR_PU = P3_DIR_PU | (1 << 1);
-    SWK = 0;
-
-    //P3_MOD_OC = P3_MOD_OC | (1 << 2);
-    //P3_DIR_PU = P3_DIR_PU | (1 << 2);
-    SWD = 1;
-
-    //P3_MOD_OC = P3_MOD_OC | (1 << 0);
-    //P3_DIR_PU = P3_DIR_PU | (1 << 0);
-    RST = 1;
-}
+  bits = SWD;             \
+  while(!TF2); SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;\
+  while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
+#endif
+#define SW_READ_BIT(bits) \
+  bits = SWD; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
 // todo: look at difference between SWJ & SWD sequence
 // use SW_WRITE_BIT macro?
@@ -80,6 +76,20 @@ void SWJ_Sequence(uint8_t count, const uint8_t *datas)
             val = *datas++;
             n = 8U;
         }
+/*
+        if (val & 1U)
+        {
+            SWD = 1;
+        }
+        else
+        {
+            SWD = 0;
+        }
+        while(!TF2);
+        
+        SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
+        while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
+*/
         SW_WRITE_BIT(val);
         val >>= 1;
         n--;
@@ -164,10 +174,14 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
     SW_WRITE_BIT(1U);     /* Park Bit */
 
     /* Turnaround */
+    SWD_OUT_DISABLE();
+    SW_CLOCK_CYCLE();
+    /*
     for (n = turnaround; n; n--)
     {
         SW_CLOCK_CYCLE();
     }
+    */
 
     /* Acknowledge res */
     SW_READ_BIT(bits);
@@ -183,7 +197,7 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
         /* Data transfer */
         if (req & DAP_TRANSFER_RnW)
         {
-            /* Read data */
+            /* Read datas */
             val = 0U;
             parity = 0U;
             for (m = 0; m < 4; m++)
@@ -191,11 +205,15 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
                 for (n = 8U; n; n--)
                 {
                     SW_READ_BIT(bits); /* Read RDATA[0:31] */
-                    //parity += bits;
+                    parity += bits;
                     val >>= 1;
+                    //val |= bits << 7;
                     if (bits) val |= 0x80;
                 }
-                *datas++ = val;
+                if (datas)
+                {
+                    datas[m] = val;
+                }
             }
             SW_READ_BIT(bits); /* Read Parity */
             if ((parity ^ bits) & 1U)
@@ -204,11 +222,14 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
             }
 
             /* Turnaround */
+            /*
             for (n = turnaround; n; n--)
             {
                 SW_CLOCK_CYCLE();
             }
-            SWD = 1;
+            */
+            SW_CLOCK_CYCLE();
+            SWD_OUT_ENABLE();
         }
         else
         {
@@ -217,7 +238,7 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
             {
                 SW_CLOCK_CYCLE();
             }
-            SWD = 1;
+            SWD_OUT_ENABLE();
             /* Write datas */
             parity = 0U;
             for (m = 0; m < 4; m++)
@@ -233,17 +254,17 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
             SW_WRITE_BIT(parity); /* Write Parity Bit */
         }
         /* Idle cycles */
+        SWD = 0;
         n = idle_cycles;
         if (n)
         {
-            SWD = 0;
             for (; n; n--)
             {
                 SW_CLOCK_CYCLE();
             }
         }
         SWD = 1;
-        return ack;
+        return ((uint8_t)ack);
     }
 
     if ((ack == DAP_TRANSFER_WAIT) || (ack == DAP_TRANSFER_FAULT))
@@ -261,7 +282,7 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
         {
             SW_CLOCK_CYCLE();
         }
-        SWD = 1;
+        SWD_OUT_ENABLE();
         if (data_phase && ((req & DAP_TRANSFER_RnW) == 0U))
         {
             SWD = 0;
@@ -271,7 +292,7 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
             }
         }
         SWD = 1;
-        return ack;
+        return ((uint8_t)ack);
     }
 
     /* Protocol error */
@@ -279,6 +300,7 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
     {
         SW_CLOCK_CYCLE(); /* Back off datas phase */
     }
+    SWD_OUT_ENABLE();
     SWD = 1;
-    return ack;
+    return ((uint8_t)ack);
 }

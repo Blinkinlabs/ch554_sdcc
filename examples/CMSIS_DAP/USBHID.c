@@ -8,8 +8,7 @@
 extern __xdata  uint8_t  Ep0Buffer[];
 extern __xdata  uint8_t  Ep1Buffer[];
 
-//Bytes of received data on USB endpoint
-volatile uint8_t USBByteCountEP1 = 0;
+volatile uint8_t USBByteCountEP1 = 0;      //Bytes of received data on USB endpoint
 
 void USBInit(){
     USBDeviceCfg();                     //Device mode configuration

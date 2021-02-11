@@ -114,7 +114,7 @@ static uint8_t DAP_HostStatus(const uint8_t *req, uint8_t *res)
         LED = ((*(req + 1) & 1U));
         break;
     case DAP_TARGET_RUNNING:
-        LED = ((*(req + 1) & 1U));
+        //LED = ((*(req + 1) & 1U));
         break;
     default:
         *res = DAP_ERROR;

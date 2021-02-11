@@ -202,10 +202,36 @@
 #define DAP_PACKET_SIZE 64 //THIS_ENDP0_SIZE
 #define DAP_DEFAULT_PORT DAP_PORT_SWD
 
+// if port defines are changed, also modify MOD_OC and DIR_PU settings
 #define RST  P3_0
-#define SWK  P3_1
-#define SWD  P3_2
-#define LED  P3_3
+#define SWK  P1_7
+#define SWD  P1_6
+#define LED  P1_4
+
+inline void PORT_SWD_SETUP(void)
+{
+    // P1_MOD_OC & P1_DIR_PU = 0xFF at reset
+
+    SWK = 0;
+    // set SWK P1.7 to push-pull
+    P1_MOD_OC &= ~(1 << 7);
+
+    // set SWD P1.6 to push-pull
+    P1_MOD_OC &= ~(1 << 6);
+
+    SWD = 1;
+    RST = 1;
+}
+
+inline void SWD_OUT_ENABLE()
+{
+    P1_DIR_PU |= (1 << 6);
+}
+
+inline void SWD_OUT_DISABLE()
+{
+    P1_DIR_PU &= ~(1 << 6);
+}
 
 extern __xdata uint8_t Ep0Buffer[];
 extern __xdata uint8_t Ep1Buffer[];
@@ -215,7 +241,7 @@ extern __idata uint8_t data_phase;
 extern __idata uint8_t idle_cycles;
 
 extern uint8_t DAP_Thread(void);
-extern void PORT_SWD_SETUP(void);
+//extern void PORT_SWD_SETUP(void);
 extern uint8_t SWD_Transfer(uint8_t reqI, uint8_t __xdata *datas);
 extern void SWJ_Sequence(uint8_t count, const uint8_t *datas);
 extern void SWD_Sequence(uint8_t info, const uint8_t *swdo, uint8_t *swdi);
