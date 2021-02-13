@@ -19,7 +19,7 @@ __code USB_DEV_DESCR DevDesc = {
     .bcdDeviceH = 0x01, .bcdDeviceL = 0x00,
     .iManufacturer = 1,                 // string descriptors
     .iProduct = 2,
-    .iSerialNumber = 0,                 // no serial number string
+    .iSerialNumber = 3,
     .bNumConfigurations = 1
 };
 
@@ -111,3 +111,10 @@ __code uint16_t Manuf_Des[]={
     'W','C','H'
 };
 __code uint8_t Manuf_DesLen = sizeof(Manuf_Des);
+
+// Serial string descriptor - CMSIS-DAP unique ID
+__code uint16_t Ser_Des[]={
+    0x0308,                 // type and length
+    '1','2','3'
+};
+__code uint8_t Ser_DesLen = sizeof(Manuf_Des);

@@ -101,12 +101,12 @@ void USB_EP0_SETUP(){
                             pDescr = SerDes;
                             len = SerDesLen;
                         }
+                        */
                         else
                         {
-                            pDescr = SerDes;
-                            len = SerDesLen;
+                            pDescr = Ser_Des;
+                            len = Ser_DesLen;
                         }
-                        */
                         break;
                     case 0x22:
                         if(UsbSetupBuf->wValueL == 0){
