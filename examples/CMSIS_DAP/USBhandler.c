@@ -20,7 +20,7 @@ volatile uint8_t usbMsgFlags=0;    // uint8_t usbMsgFlags copied from VUSB
 
 inline void NOP_Process(void) {}
 
-void USB_EP0_SETUP(){
+void USB_EP0_Setup(){
     uint8_t len = USB_RX_LEN;
     if(len == (sizeof(USB_SETUP_REQ)))
     {
@@ -362,18 +362,6 @@ void USBInterrupt(void) {   //inline not really working in multiple files in SDC
                 }
             }
                 break;
-            case UIS_TOKEN_SOF:
-            {//SDCC will take IRAM if array of function pointer is used.
-                switch (callIndex) {
-                    case 0: EP0_SOF_Callback(); break;
-                    case 1: EP1_SOF_Callback(); break;
-                    case 2: EP2_SOF_Callback(); break;
-                    case 3: EP3_SOF_Callback(); break;
-                    case 4: EP4_SOF_Callback(); break;
-                    default: break;
-                }
-            }
-                break;
             case UIS_TOKEN_IN:
             {//SDCC will take IRAM if array of function pointer is used.
                 switch (callIndex) {
@@ -387,16 +375,14 @@ void USBInterrupt(void) {   //inline not really working in multiple files in SDC
             }
                 break;
             case UIS_TOKEN_SETUP:
-            {//SDCC will take IRAM if array of function pointer is used.
+            {
                 switch (callIndex) {
-                    case 0: EP0_SETUP_Callback(); break;
-                    case 1: EP1_SETUP_Callback(); break;
-                    case 2: EP2_SETUP_Callback(); break;
-                    case 3: EP3_SETUP_Callback(); break;
-                    case 4: EP4_SETUP_Callback(); break;
+                    case 0: USB_EP0_Setup(); break;
                     default: break;
                 }
             }
+                break;
+            default:
                 break;
         }
         
