@@ -8,7 +8,7 @@
 void USB_EP1_IN();
 void USB_EP1_OUT();
 
-__xdata __at (EP0_ADDR) uint8_t  Ep0Buffer[8];     
+__xdata __at (EP0_ADDR) uint8_t  Ep0Buffer[8];
 __xdata __at (EP1_ADDR) uint8_t  Ep1Buffer[128];       //on page 47 of data sheet, the receive buffer need to be min(possible packet size+2,64)   //IN and OUT buffer, must be even address
 
 uint16_t SetupLen;
