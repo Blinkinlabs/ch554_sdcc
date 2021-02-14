@@ -321,8 +321,7 @@ static uint8_t DAP_SWD_Configure(const uint8_t *req, uint8_t *res)
 // Process SWD Sequence command and prepare response
 //   request:  pointer to request data
 //   response: pointer to response data
-//   return:   number of bytes in response (lower 16 bits)
-//             number of bytes in request (upper 16 bits)
+//   return:   number of bytes in response
 static uint8_t DAP_SWD_Sequence(const uint8_t *req, uint8_t *res)
 {
     uint8_t sequence_info;
@@ -378,8 +377,7 @@ static uint8_t DAP_SWD_Sequence(const uint8_t *req, uint8_t *res)
 // Process Transfer Configure command and prepare response
 //   request:  pointer to request data
 //   response: pointer to response data
-//   return:   number of bytes in response (lower 16 bits)
-//             number of bytes in request (upper 16 bits)
+//   return:   number of bytes in response
 __idata uint8_t idle_cycles;
 __idata uint16_t retry_count;
 __idata uint16_t match_retry;
@@ -399,8 +397,7 @@ static uint8_t DAP_TransferConfigure(const uint8_t *req, uint8_t *res)
 // Process SWD Transfer command and prepare response
 //   request:  pointer to request data
 //   response: pointer to response data
-//   return:   number of bytes in response (lower 16 bits)
-//             number of bytes in request (upper 16 bits)
+//   return:   number of bytes in response
 
 __xdata uint8_t data[4];
 __idata uint8_t match_mask[4];
@@ -437,7 +434,8 @@ static uint8_t DAP_SWD_Transfer(const uint8_t *req, uint8_t *res)
     for (; request_count != 0U; request_count--)
     {
         request_value = *req++;
-        if ((request_value & DAP_TRANSFER_RnW) != 0U)
+        // RnW == 1 for read, 0 for write
+        if (request_value & DAP_TRANSFER_RnW)
         {
             // Read registers
             if (post_read)
@@ -571,7 +569,7 @@ static uint8_t DAP_SWD_Transfer(const uint8_t *req, uint8_t *res)
             }
             check_write = 0U;
         }
-        else
+        else    // RnW == 0
         {
             // Write register
             if (post_read)
@@ -693,54 +691,10 @@ end:
     return ((uint8_t)(res - response_head));
 }
 
-// Process Dummy Transfer command and prepare response
-//   request:  pointer to request data
-//   response: pointer to response data
-//   return:   number of bytes in response (lower 16 bits)
-//             number of bytes in request (upper 16 bits)
-//static uint8_t DAP_Dummy_Transfer(const uint8_t *req, uint8_t *res)
-//{
-//  uint8_t *request_head;
-//  uint8_t request_count;
-//  uint8_t request_value;
-
-//  request_head = req;
-
-//  req++; // Ignore DAP index
-
-//  request_count = *req++;
-
-//  for (; request_count != 0U; request_count--)
-//  {
-//    // Process dummy requests
-//    request_value = *req++;
-//    if ((request_value & DAP_TRANSFER_RnW) != 0U)
-//    {
-//      // Read registers
-//      if ((request_value & DAP_TRANSFER_MATCH_VALUE) != 0U)
-//      {
-//        // Read with value match
-//        req += 4;
-//      }
-//    }
-//    else
-//    {
-//      // Write registers
-//      req += 4;
-//    }
-//  }
-
-//  *(res + 0) = 0U; // res count
-//  *(res + 1) = 0U; // res value
-
-//  return 2;
-//}
-
 // Process Transfer command and prepare response
 //   request:  pointer to request data
 //   response: pointer to response data
-//   return:   number of bytes in response (lower 16 bits)
-//             number of bytes in request (upper 16 bits)
+//   return:   number of bytes in response
 static uint8_t DAP_Transfer(const uint8_t *req, uint8_t *res)
 {
     uint8_t num = 0;
