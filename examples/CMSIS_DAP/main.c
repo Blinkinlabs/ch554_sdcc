@@ -32,13 +32,14 @@ void main() {
     CfgFsys(); 
     USBInit();
     while (1) {
+        uint8_t response_len;
         if (USBByteCountEP1) {
-            DAP_Thread();
+            response_len = DAP_Thread();
             USBByteCountEP1 = 0 ;
 
             UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK; //enable receive
 
-            UEP1_T_LEN = 64;
+            UEP1_T_LEN = response_len;
             UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK; //enable send
         }
     }
