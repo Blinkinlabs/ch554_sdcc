@@ -39,7 +39,8 @@ void main() {
 
             UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK; //enable receive
 
-            UEP1_T_LEN = response_len;
+            //UEP1_T_LEN = response_len;
+            UEP1_T_LEN = 64;            // hangs on Windoze < 64
             UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK; //enable send
         }
     }
