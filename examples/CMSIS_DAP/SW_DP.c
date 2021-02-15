@@ -32,15 +32,12 @@ volatile uint8_t swdelay;
 
 #define SW_CLOCK_CYCLE() \
   SWK = 1; SWK = 0;
-//  SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
 #define SW_WRITE_BIT(bits) \
   SWD = (bits)&1; SWK = 1; SWK = 0;
-//  SWD = (bits)&1; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
 #define SW_READ_BIT(bits) \
   bits = SWD; SWK = 1; SWK = 0;
-//  bits = SWD; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
 // todo: look at difference between SWJ & SWD sequence
 // use SW_WRITE_BIT macro?
@@ -198,17 +195,31 @@ uint8_t SWD_Transfer(uint8_t req, __xdata uint8_t *data)
             SW_CLOCK_CYCLE();
             SWD_OUT_ENABLE();
 
-            /* Write data */
+            // Write WDATA[0:31]
             parity = 0U;
             for (m = 0; m < 4; m++)
             {
                 val = data[m];
+                ACC = val;
+                //parity += P;
+                if (P) parity++;
                 for (n = 8U; n; n--)
                 {
-                    SW_WRITE_BIT(val); /* Write WDATA[0:31] */
-                    parity += val;
+                    SW_WRITE_BIT(val);
                     val >>= 1;
                 }
+                /*
+                __asm
+                mov r2, #8
+                1$:
+                rrc A
+                mov P1.6, C
+                setb P1.7
+                clr P1.7
+                djnz r2, 1$
+                __endasm;
+                */
+
             }
             SW_WRITE_BIT(parity); /* Write Parity Bit */
         }
