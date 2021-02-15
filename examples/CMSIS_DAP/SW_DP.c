@@ -24,45 +24,31 @@
  * Title:        SW_DP.c CMSIS-DAP SW DP I/O
  *
  *---------------------------------------------------------------------------*/
+// SDCC/8051 optimizations by Ralph Doncaster 2021
 
 #include "DAP.h"
 
 volatile uint8_t swdelay;
 
-#if 0
 #define SW_CLOCK_CYCLE() \
-  while(!TF2); SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;              \
-  while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
-#endif
-#define SW_CLOCK_CYCLE() \
-  SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
+  SWK = 1; SWK = 0;
+//  SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
-#if 0
 #define SW_WRITE_BIT(bits) \
-  SWD = (bits)&1;          \
-  while(!TF2); SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;\
-  while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
-#endif
-#define SW_WRITE_BIT(bits) \
-  SWD = (bits)&1; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
+  SWD = (bits)&1; SWK = 1; SWK = 0;
+//  SWD = (bits)&1; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
-#if 0
- data from target was clocked out on last SWK rising edge
 #define SW_READ_BIT(bits) \
-  bits = SWD;             \
-  while(!TF2); SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;\
-  while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
-#endif
-#define SW_READ_BIT(bits) \
-  bits = SWD; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
+  bits = SWD; SWK = 1; SWK = 0;
+//  bits = SWD; SWK = 1; swdelay = 1; while (--swdelay); SWK = 0;
 
 // todo: look at difference between SWJ & SWD sequence
 // use SW_WRITE_BIT macro?
 // Generate SWJ Sequence
 //   count:  sequence bits count
-//   datas:   pointer to sequence bits datas
+//   data:   pointer to sequence bits data
 //   return: none
-void SWJ_Sequence(uint8_t count, const uint8_t *datas)
+void SWJ_Sequence(uint8_t count, const uint8_t *data)
 {
     uint8_t val;
     uint8_t n;
@@ -73,23 +59,10 @@ void SWJ_Sequence(uint8_t count, const uint8_t *datas)
     {
         if (n == 0U)
         {
-            val = *datas++;
+            val = *data++;
             n = 8U;
         }
-/*
-        if (val & 1U)
-        {
-            SWD = 1;
-        }
-        else
-        {
-            SWD = 0;
-        }
-        while(!TF2);
-        
-        SWK = 1; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
-        while(!TF2); SWK = 0; TR2=0;TL2=RCAP2L;TH2=RCAP2H;TF2=0;TR2=1;
-*/
+
         SW_WRITE_BIT(val);
         val >>= 1;
         n--;
@@ -98,8 +71,8 @@ void SWJ_Sequence(uint8_t count, const uint8_t *datas)
 
 // Generate SWD Sequence
 //   info:   sequence information
-//   swdo:   pointer to SWDIO generated datas
-//   swdi:   pointer to SWDIO captured datas
+//   swdo:   pointer to SWDIO generated data
+//   swdi:   pointer to SWDIO captured data
 //   return: none
 void SWD_Sequence(uint8_t info, const uint8_t *swdo, uint8_t *swdi)
 {
@@ -144,9 +117,9 @@ void SWD_Sequence(uint8_t info, const uint8_t *swdo, uint8_t *swdi)
 
 // SWD Transfer I/O
 //   request: A[3:2] RnW APnDP
-//   datas:    DATA[31:0]
+//   data:    DATA[31:0]
 //   return:  ACK[2:0]
-uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
+uint8_t SWD_Transfer(uint8_t req, __xdata uint8_t *data)
 {
     uint8_t ack;
     uint8_t bits = req;
@@ -173,15 +146,9 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
     SW_WRITE_BIT(0U);     /* Stop Bit */
     SW_WRITE_BIT(1U);     /* Park Bit */
 
-    /* Turnaround */
+    /* Turnaround is always 1 cycle */
     SWD_OUT_DISABLE();
     SW_CLOCK_CYCLE();
-    /*
-    for (n = turnaround; n; n--)
-    {
-        SW_CLOCK_CYCLE();
-    }
-    */
 
     /* Acknowledge res */
     SW_READ_BIT(bits);
@@ -197,7 +164,7 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
         /* Data transfer */
         if (req & DAP_TRANSFER_RnW)
         {
-            /* Read datas */
+            /* Read data */
             val = 0U;
             parity = 0U;
             for (m = 0; m < 4; m++)
@@ -210,9 +177,9 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
                     //val |= bits << 7;
                     if (bits) val |= 0x80;
                 }
-                if (datas)
+                if (data)
                 {
-                    datas[m] = val;
+                    data[m] = val;
                 }
             }
             SW_READ_BIT(bits); /* Read Parity */
@@ -222,28 +189,20 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
             }
 
             /* Turnaround */
-            /*
-            for (n = turnaround; n; n--)
-            {
-                SW_CLOCK_CYCLE();
-            }
-            */
             SW_CLOCK_CYCLE();
             SWD_OUT_ENABLE();
         }
-        else
+        else        // write data
         {
             /* Turnaround */
-            for (n = turnaround; n; n--)
-            {
-                SW_CLOCK_CYCLE();
-            }
+            SW_CLOCK_CYCLE();
             SWD_OUT_ENABLE();
-            /* Write datas */
+
+            /* Write data */
             parity = 0U;
             for (m = 0; m < 4; m++)
             {
-                val = datas[m];
+                val = data[m];
                 for (n = 8U; n; n--)
                 {
                     SW_WRITE_BIT(val); /* Write WDATA[0:31] */
@@ -278,11 +237,9 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
             }
         }
         /* Turnaround */
-        for (n = turnaround; n; n--)
-        {
-            SW_CLOCK_CYCLE();
-        }
+        SW_CLOCK_CYCLE();
         SWD_OUT_ENABLE();
+
         if (data_phase && ((req & DAP_TRANSFER_RnW) == 0U))
         {
             SWD = 0;
@@ -295,11 +252,12 @@ uint8_t SWD_Transfer(uint8_t req, uint8_t __xdata *datas)
         return ((uint8_t)ack);
     }
 
-    /* Protocol error */
-    for (n = turnaround + 32U + 1U; n; n--)
-    {
-        SW_CLOCK_CYCLE(); /* Back off datas phase */
-    }
+    /* Protocol error - clock out 32bits + parity + turnaround */
+    n = 32U + 1U + 1U;
+    do {
+        SW_CLOCK_CYCLE();       // back off data phase
+    } while (--n);
+
     SWD_OUT_ENABLE();
     SWD = 1;
     return ((uint8_t)ack);

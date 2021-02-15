@@ -38,13 +38,13 @@ static uint8_t DAP_Info(uint8_t id, uint8_t *info)
     switch (id)
     {
     case DAP_ID_VENDOR:
-        length = 0;
+
         break;
     case DAP_ID_PRODUCT:
-        length = 0;
+
         break;
     case DAP_ID_SER_NUM:
-        length = 0;
+
         break;
     case DAP_ID_FW_VER:
         length = (uint8_t)sizeof(DAP_FW_VER);
