@@ -898,7 +898,7 @@ uint8_t DAP_Thread(void)
     if (1)
     {
         uint8_t __xdata *req = &Ep1Buffer[0];
-        uint8_t __xdata *res = &Ep1Buffer[64];
+        uint8_t __xdata *res = &Ep2Buffer[0];
 
         *res++ = *req;
         switch (*req++)

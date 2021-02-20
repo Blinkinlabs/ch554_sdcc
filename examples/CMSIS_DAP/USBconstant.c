@@ -44,31 +44,30 @@ __code uint8_t CfgDesc[] ={
     0x00,               /* iInterface */
     
     /* HID Descriptor */
-    0x09,            /* Size of this descriptor in UINT8s. */
-    0x21,           /* HID descriptor type. */
+    0x09,               /* Size of this descriptor in UINT8s. */
+    USB_DESCR_TYP_HID,         // bDescriptorType
     0x10, 0x01,         /* HID Class Spec. release number. */
     0x00,               /* H/W target country. */
     0x01,               /* Number of HID class descriptors to follow. */
-    0x22,       /* Descriptor type. */
+    USB_DESCR_TYP_REPORT,       // bDescriptorType
     sizeof(ReportDesc) & 0xff,sizeof(ReportDesc) >> 8,    /* Total length of report descriptor. */
     
-    /* EP Descriptor: interrupt in. */
-    0x07,                       /* bLength */
-    0x05,                      /* bDescriptorType */
-    0x01,         /* bEndpointAddress */
-    0x03,                             /* bmAttributes */
-    0x40, 0x00,    /* wMaxPacketSize */
-    1,        /* bInterval */
-    
-    /* EP Descriptor: interrupt out. */
-    0x07,                       /* bLength */
-    0x05,                      /* bDescriptorType */
-    0x81,       /* bEndpointAddress */
-    0x03,                             /* bmAttributes */
-    0x40, 0x00,    /* wMaxPacketSize */
-    1         /* bInterval */
-    
-    
+    // EP Descriptor
+    sizeof(USB_ENDP_DESCR),     // bLength
+    USB_DESCR_TYP_ENDP,         // bDescriptorType
+    0x82,                       // bEndpointAddress EP2 IN
+    USB_ENDP_TYPE_INTER,        // bmAttributes
+    0x40, 0x00,                 // wMaxPacketSize
+    1,                          // bInterval
+
+    // EP Descriptor
+    sizeof(USB_ENDP_DESCR),     // bLength
+    USB_DESCR_TYP_ENDP,         // bDescriptorType
+    0x01,                       // bEndpointAddress EP1 OUT
+    USB_ENDP_TYPE_INTER,        // bmAttributes
+    0x40, 0x00,                 // wMaxPacketSize
+    1,                          // bInterval
+
 };
 
 

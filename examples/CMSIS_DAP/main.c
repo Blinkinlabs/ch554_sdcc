@@ -37,11 +37,11 @@ void main() {
             response_len = DAP_Thread();
             USBByteCountEP1 = 0 ;
 
-            UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK; //enable receive
+            //UEP2_T_LEN = response_len;
+            UEP2_T_LEN = 64;            // hangs on Windoze < 64
+            UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK; //enable send
 
-            //UEP1_T_LEN = response_len;
-            UEP1_T_LEN = 64;            // hangs on Windoze < 64
-            UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK; //enable send
+            UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK; //enable receive
         }
     }
 }

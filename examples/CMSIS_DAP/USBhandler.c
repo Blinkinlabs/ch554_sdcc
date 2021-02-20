@@ -5,11 +5,13 @@
 #include "USBconstant.h"
 
 //HID functions:
-void USB_EP1_IN();
+void USB_EP2_IN();
 void USB_EP1_OUT();
 
+//on page 47 of data sheet, the receive buffer need to be min(possible packet size+2,64)
 __xdata __at (EP0_ADDR) uint8_t  Ep0Buffer[8];
-__xdata __at (EP1_ADDR) uint8_t  Ep1Buffer[128];       //on page 47 of data sheet, the receive buffer need to be min(possible packet size+2,64)   //IN and OUT buffer, must be even address
+__xdata __at (EP1_ADDR) uint8_t  Ep1Buffer[128];    // EP1 OUT*2
+__xdata __at (EP2_ADDR) uint8_t  Ep2Buffer[64];
 
 uint16_t SetupLen;
 uint8_t SetupReq,UsbConfig;
@@ -30,10 +32,6 @@ void USB_EP0_Setup(){
         usbMsgFlags = 0;
         if ( ( UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK ) != USB_REQ_TYP_STANDARD )//Not standard request
         {
-            
-            //here is the commnunication starts, refer to usbFunctionSetup of USBtiny
-            //or usb_setup in usbtiny
-            
             switch( ( UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK ))
             {
                 case USB_REQ_TYP_VENDOR:    
@@ -306,6 +304,7 @@ void USB_EP0_Setup(){
     }
     else
     {
+        // TODO: remove unreachable code here
         UEP0_T_LEN = 0;  // Tx data to host or send 0-length packet
         UEP0_CTRL = bUEP_R_TOG | bUEP_T_TOG | UEP_R_RES_ACK | UEP_T_RES_ACK;//Expect DATA1, Answer ACK
     }
@@ -354,10 +353,10 @@ void USBInterrupt(void) {   //inline not really working in multiple files in SDC
             {//SDCC will take IRAM if array of function pointer is used.
                 switch (callIndex) {
                     case 0: EP0_OUT_Callback(); break;
-                    case 1: EP1_OUT_Callback(); break;
-                    case 2: EP2_OUT_Callback(); break;
-                    case 3: EP3_OUT_Callback(); break;
-                    case 4: EP4_OUT_Callback(); break;
+                    case 1: USB_EP1_OUT(); break;
+                    case 2: break;
+                    case 3: break;
+                    case 4: break;
                     default: break;
                 }
             }
@@ -366,10 +365,10 @@ void USBInterrupt(void) {   //inline not really working in multiple files in SDC
             {//SDCC will take IRAM if array of function pointer is used.
                 switch (callIndex) {
                     case 0: EP0_IN_Callback(); break;
-                    case 1: EP1_IN_Callback(); break;
-                    case 2: EP2_IN_Callback(); break;
-                    case 3: EP3_IN_Callback(); break;
-                    case 4: EP4_IN_Callback(); break;
+                    case 1: break;
+                    case 2: USB_EP2_IN(); break;
+                    case 3: break;
+                    case 4: break;
                     default: break;
                 }
             }
@@ -439,10 +438,13 @@ void USBDeviceIntCfg()
 void USBDeviceEndPointCfg()
 {
     UEP1_DMA = (uint16_t) Ep1Buffer;    //Endpoint 1 data transfer address
+    UEP2_DMA = (uint16_t) Ep2Buffer;    //Endpoint 1 data transfer address
 
     UEP1_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_ACK;        //Endpoint 1 automatically flips the sync flag, IN transaction returns NAK, OUT returns ACK
+    UEP2_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_NAK;        //Endpoint 2 automatically flips the sync flag, IN & OUT transaction returns NAK
     
     UEP0_DMA = (uint16_t) Ep0Buffer;    //Endpoint 0 data transfer address
-    UEP4_1_MOD = 0XC0;                  //endpoint1 TX RX enable
+    UEP4_1_MOD = bUEP1_RX_EN;
+    UEP2_3_MOD = bUEP2_TX_EN;
     UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;                //Manual flip, OUT transaction returns ACK, IN transaction returns NAK
 }
