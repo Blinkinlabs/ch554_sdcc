@@ -31,17 +31,16 @@ __code uint8_t CfgDesc[] ={
     0x80,               /* bmAttributes */
     0x64,               /* MaxPower */
     
-    
-    /* I/F descr: HID */
-    0x09,      /* bLength */
-    0x04,     /* bDescriptorType */
-    0x00,               /* bInterfaceNumber */
-    0x00,               /* bAlternateSetting */
-    0x02,               /* bNumEndpoints */
-    0x03,               /* bInterfaceClass */
-    0x00,               /* bInterfaceSubClass */
-    0x00,               /* bInterfaceProtocol */
-    0x00,               /* iInterface */
+    // HID interface descriptor
+    0x09,                       // bLength
+    USB_DESCR_TYP_INTERF,       // bDescriptorType
+    0x00,                       // bInterfaceNumber
+    0x00,                       // bAlternateSetting
+    0x02,                       // bNumEndpoints
+    USB_DEV_CLASS_HID,          // bInterfaceClass
+    0x00,                       // bInterfaceSubClass
+    0x00,                       // bInterfaceProtocol
+    0x00,                       // iInterface
     
     /* HID Descriptor */
     0x09,               /* Size of this descriptor in UINT8s. */

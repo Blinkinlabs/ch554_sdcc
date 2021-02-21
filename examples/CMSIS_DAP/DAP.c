@@ -27,6 +27,9 @@
 
 #include "DAP.h"
 
+__xdata uint8_t* DAP_RxBuf;
+__xdata uint8_t* DAP_TxBuf;
+
 // Get DAP Information
 //   id:      info identifier
 //   info:    pointer to info data
@@ -897,8 +900,10 @@ uint8_t DAP_Thread(void)
 
     if (1)
     {
-        uint8_t __xdata *req = &Ep1Buffer[0];
-        uint8_t __xdata *res = &Ep2Buffer[0];
+        // uint8_t __xdata *req = &Ep1Buffer[0];
+        // uint8_t __xdata *res = &Ep2Buffer[0];
+        uint8_t __xdata *req = DAP_RxBuf;
+        uint8_t __xdata *res = DAP_TxBuf;
 
         *res++ = *req;
         switch (*req++)

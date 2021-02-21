@@ -237,6 +237,9 @@ extern __xdata uint8_t Ep0Buffer[];
 extern __xdata uint8_t Ep1Buffer[];
 extern __xdata uint8_t Ep2Buffer[];
 
+extern __xdata uint8_t* DAP_RxBuf;
+extern __xdata uint8_t* DAP_TxBuf;
+
 extern __idata uint8_t turnaround;
 extern __idata uint8_t data_phase;
 extern __idata uint8_t idle_cycles;
