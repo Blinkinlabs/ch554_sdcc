@@ -48,11 +48,10 @@ void USB_EP1_OUT(){
     if ( U_TOG_OK ){               // Discard unsynchronized packets
         USBByteCountEP1 = USB_RX_LEN;
         if (USBByteCountEP1){
-            if (--EP1_buffs_avail == 0) {
-                //Respond NAK. Let main change response after handling.
-                UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_NAK;
-            }
+            //Respond NAK. Let main change response after handling.
+            UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_NAK;
 
+            // double-buffering of DAP request packets
             DAP_RxBuf = (__xdata uint8_t*) UEP1_DMA;
             EP1_buf_toggle = !EP1_buf_toggle;
             if (EP1_buf_toggle)
@@ -81,18 +80,26 @@ void main() {
     USBInit();
     while (1) {
         uint8_t response_len;
-        if (USBByteCountEP1) {
-            response_len = DAP_Thread();
-            USBByteCountEP1 = 0 ;
-            // enable receive
-            EP1_buffs_avail++;
-            UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK;
+        // process if a DAP packet is received, and TxBuf is empty
+        // save ByteCountEP1?
+        if (USBByteCountEP1 && !UEP2_T_LEN) {
+            __xdata uint8_t* RxPkt = DAP_RxBuf;
+            if (--EP1_buffs_avail) {
+                USBByteCountEP1 = 0 ;
+                // Rx another packet while DAP_Thread runs
+                UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK;
+            }
+
+            response_len = DAP_Thread(RxPkt);
 
             //UEP2_T_LEN = response_len;
             // enable interrupt IN response
             UEP2_T_LEN = 64;            // hangs on Windoze < 64
             UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;
 
+            // enable receive
+            EP1_buffs_avail++;
+            UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_R_RES | UEP_R_RES_ACK;
         }
     }
 }

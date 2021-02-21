@@ -198,7 +198,7 @@
 #define SWD_SEQUENCE_CLK 0x3FU // SWCLK count
 #define SWD_SEQUENCE_DIN 0x80U // SWDIO capture
 
-#define DAP_PACKET_COUNT 1
+#define DAP_PACKET_COUNT 2
 #define DAP_PACKET_SIZE 64 //THIS_ENDP0_SIZE
 #define DAP_DEFAULT_PORT DAP_PORT_SWD
 
@@ -244,7 +244,7 @@ extern __idata uint8_t turnaround;
 extern __idata uint8_t data_phase;
 extern __idata uint8_t idle_cycles;
 
-extern uint8_t DAP_Thread(void);
+extern uint8_t DAP_Thread(__xdata uint8_t* req);
 extern uint8_t SWD_Transfer(uint8_t reqI, __xdata uint8_t *data);
 extern void SWJ_Sequence(uint8_t count, const uint8_t *data);
 extern void SWD_Sequence(uint8_t info, const uint8_t *swdo, uint8_t *swdi);

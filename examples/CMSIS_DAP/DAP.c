@@ -893,16 +893,11 @@ static uint8_t DAP_WriteAbort(const uint8_t *req, uint8_t *res)
 }
 
 // DAP Thread.
-uint8_t DAP_Thread(void)
+uint8_t DAP_Thread(uint8_t __xdata *req)
 {
     uint8_t num;
     uint8_t returnVal = 0;
 
-    if (1)
-    {
-        // uint8_t __xdata *req = &Ep1Buffer[0];
-        // uint8_t __xdata *res = &Ep2Buffer[0];
-        uint8_t __xdata *req = DAP_RxBuf;
         uint8_t __xdata *res = DAP_TxBuf;
 
         *res++ = *req;
@@ -979,7 +974,6 @@ uint8_t DAP_Thread(void)
         }
 
         returnVal = num + 1;
-    }
     
     return returnVal;
 }
