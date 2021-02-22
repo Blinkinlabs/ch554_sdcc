@@ -13,6 +13,8 @@ __xdata __at (EP0_ADDR) uint8_t  Ep0Buffer[8];
 __xdata __at (EP1_ADDR) uint8_t  Ep1Buffer[128];    // EP1 OUT*2
 __xdata __at (EP2_ADDR) uint8_t  Ep2Buffer[64];
 
+extern __sfr PDLen;
+
 uint16_t SetupLen;
 uint8_t SetupReq,UsbConfig;
 
@@ -91,7 +93,8 @@ void USB_EP0_Setup(){
                         else if(UsbSetupBuf->wValueL == 2)
                         {
                             pDescr = Prod_Des;
-                            len = Prod_DesLen;
+                            //len = Prod_DesLen;
+                            len = (uint8_t)&PDLen;
                         }
                         /*
                         else if(UsbSetupBuf->wValueL == 3)

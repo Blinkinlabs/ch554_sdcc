@@ -97,22 +97,24 @@ __code uint8_t LangDesLen = sizeof(LangDes);
 
 //Product String Descriptor
 __code uint16_t Prod_Des[]={
-    0x0320,                 // type and length
-    // u"CH55x CMSIS-DAP"
-    'C','H','5','5','x',' ',
-    'C','M','S','I','S','-','D','A','P'
+    0x0300 + sizeof(Prod_Des),  // type and length
+    // compound literals not supported in SDCC as of v4.0.3
+    // (__code uint16_t[]) { u"CH55x CMSIS-DAP" }
+    'C','H','5','5','x',' ', 'C','M','S','I','S','-','D','A','P'
 };
 __code uint8_t Prod_DesLen = sizeof(Prod_Des);
 
+__sfr __at(sizeof(Prod_Des)) PDLen;
+
 __code uint16_t Manuf_Des[]={
-    0x0308,                 // type and length
+    0x0300 + sizeof(Manuf_Des), // type and length
     'W','C','H'
 };
 __code uint8_t Manuf_DesLen = sizeof(Manuf_Des);
 
 // Serial string descriptor - CMSIS-DAP unique ID
 __code uint16_t Ser_Des[]={
-    0x0308,                 // type and length
+    0x0300 + sizeof(Ser_Des),   // type and length
     '1','2','3'
 };
 __code uint8_t Ser_DesLen = sizeof(Manuf_Des);
