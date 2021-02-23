@@ -25,16 +25,19 @@
  *
  *---------------------------------------------------------------------------*/
 
+#include <string.h>
 #include "DAP.h"
 
 __xdata uint8_t* DAP_RxBuf;
 __xdata uint8_t* DAP_TxBuf;
 
+// TODO: change all uint8_t* to __xdata
+
 // Get DAP Information
 //   id:      info identifier
 //   info:    pointer to info data
 //   return:  number of bytes in info data
-static uint8_t DAP_Info(uint8_t id, uint8_t *info)
+static uint8_t DAP_Info(uint8_t id, __xdata uint8_t *info)
 {
     uint8_t length = 0U;
 
@@ -51,7 +54,7 @@ static uint8_t DAP_Info(uint8_t id, uint8_t *info)
         break;
     case DAP_ID_FW_VER:
         length = (uint8_t)sizeof(DAP_FW_VER);
-        memcpy(info, DAP_FW_VER, length);
+        strcpy(info, DAP_FW_VER );
         break;
     case DAP_ID_DEVICE_VENDOR:
 
