@@ -14,7 +14,7 @@ __xdata __at (EP0_ADDR) uint8_t  Ep0Buffer[8];
 __xdata __at (EP1_ADDR) uint8_t  Ep1Buffer[128];    // EP1 OUT*2
 __xdata __at (EP2_ADDR) uint8_t  Ep2Buffer[64];
 
-uint16_t SetupLen;
+uint8_t SetupLen;
 uint8_t SetupReq,UsbConfig;
 
 __code uint8_t *pDescr;
@@ -63,7 +63,10 @@ void USB_EP0_Setup(){
     uint8_t len = USB_RX_LEN;
     if(len == (sizeof(USB_SETUP_REQ)))
     {
-        SetupLen = ((uint16_t)UsbSetupBuf->wLengthH<<8) | (UsbSetupBuf->wLengthL);
+        uint16_t wLength = ((uint16_t)UsbSetupBuf->wLengthH<<8) | (UsbSetupBuf->wLengthL);
+        SetupLen = wLength;
+        // maximum supported reply size is 254 bytes
+        if (wLength > 254) SetupLen = 254;
         len = 0;                                                      // Default is success and upload 0 length
         SetupReq = UsbSetupBuf->bRequest;
         usbMsgFlags = 0;
