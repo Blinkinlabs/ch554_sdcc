@@ -1,3 +1,4 @@
+#include <string.h>
 
 #include <ch554.h>
 #include <ch554_usb.h>
@@ -21,6 +22,42 @@ __code uint8_t *pDescr;
 volatile uint8_t usbMsgFlags=0;    // uint8_t usbMsgFlags copied from VUSB
 
 inline void NOP_Process(void) {}
+
+// copy descriptor *pDescr to Ep0
+#pragma callee_saves cpy_desc_Ep0
+void cpy_desc_Ep0(uint8_t len) __naked
+{
+    len;            // stop unused arg warning
+    __asm
+    xch A, _DPL     ; ACC = len
+    inc _XBUS_AUX
+    mov DPL, #_Ep0Buffer
+    mov DPH, #(_Ep0Buffer >> 8)
+    dec _XBUS_AUX
+    mov DPL, _pDescr
+    mov DPH, (_pDescr + 1)
+    sjmp _ccpyx
+    __endasm;
+}
+
+// copy code to xram 
+// *dest in DPTR1, len in A
+#pragma callee_saves ccpyx
+void ccpyx(__code char* src)
+{
+    src;            // stop unused arg warning
+    __asm
+    push ar7
+    xch A, R7
+    01$:
+    clr A
+    movc A, @A+DPTR
+    inc DPTR
+    .DB  0xA5       ;MOVX @DPTR1,A & INC DPTR1
+    djnz R7, 01$
+    pop ar7
+    __endasm;
+}
 
 void USB_EP0_Setup(){
     uint8_t len = USB_RX_LEN;
@@ -118,9 +155,8 @@ void USB_EP0_Setup(){
                             SetupLen = len;    // Limit length
                         }
                         len = SetupLen >= DEFAULT_ENDP0_SIZE ? DEFAULT_ENDP0_SIZE : SetupLen;                            //transmit length for this packet
-                        for (uint8_t i=0;i<len;i++){
-                            Ep0Buffer[i] = pDescr[i];
-                        }
+                        cpy_desc_Ep0(len);
+
                         SetupLen -= len;
                         pDescr += len;
                     }
@@ -308,10 +344,8 @@ void USB_EP0_IN(){
         case USB_GET_DESCRIPTOR:
         {
             uint8_t len = SetupLen >= DEFAULT_ENDP0_SIZE ? DEFAULT_ENDP0_SIZE : SetupLen;                                 //send length
-            for (uint8_t i=0;i<len;i++){
-                Ep0Buffer[i] = pDescr[i];
-            }
-            //memcpy( Ep0Buffer, pDescr, len );                                  
+            cpy_desc_Ep0(len);
+
             SetupLen -= len;
             pDescr += len;
             UEP0_T_LEN = len;
