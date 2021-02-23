@@ -10,17 +10,13 @@
 
 extern __code USB_DEV_DESCR DevDesc;
 extern __code uint8_t CfgDesc[];
-extern __code uint8_t LangDes[];
 extern __code uint8_t ReportDesc[];
+extern __code uint16_t LangDes[];
 extern __code uint16_t Prod_Des[];
 extern __code uint16_t Manuf_Des[];
 extern __code uint16_t Ser_Des[];
 
 extern __code uint8_t CfgDescLen;
-extern __code uint8_t LangDesLen;
 extern __code uint8_t ReportDescLen;
-extern __code uint8_t Prod_DesLen;
-extern __code uint8_t Manuf_DesLen;
-extern __code uint8_t Ser_DesLen;
 
 #endif

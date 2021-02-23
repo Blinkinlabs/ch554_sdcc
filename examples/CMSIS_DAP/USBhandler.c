@@ -67,44 +67,36 @@ void USB_EP0_Setup(){
                 case USB_GET_DESCRIPTOR:
                     switch(UsbSetupBuf->wValueH)
                 {
-                    case 1:            //Device Descriptor
-                        // pDescr = DevDesc;                                         //Put Device Descriptor into outgoing buffer
-                        // len = DevDescLen;
+                    case 1:             // Device Descriptor
                         pDescr = (uint8_t*)&DevDesc;
                         len = sizeof(DevDesc);
                         break;
-                    case 2:            //Configure Descriptor
+                    case 2:             // configureation descriptor
                         pDescr = CfgDesc;                                       
                         len = CfgDescLen;
                         break;
-                    case 3:
+                    case 3:             // string descriptor
                         if(UsbSetupBuf->wValueL == 0)
                         {
                             pDescr = LangDes;
-                            len = LangDesLen;
+                            // len = LangDesLen;
                         }
                         else if(UsbSetupBuf->wValueL == 1)
                         {
                             pDescr = Manuf_Des;
-                            len = Manuf_DesLen;
+                            //len = Manuf_DesLen;
                         }
                         else if(UsbSetupBuf->wValueL == 2)
                         {
                             pDescr = Prod_Des;
-                            len = Prod_DesLen;
+                            //len = Prod_DesLen;
                         }
-                        /*
-                        else if(UsbSetupBuf->wValueL == 3)
-                        {
-                            pDescr = SerDes;
-                            len = SerDesLen;
-                        }
-                        */
                         else
                         {
                             pDescr = Ser_Des;
-                            len = Ser_DesLen;
+                            //len = Ser_DesLen;
                         }
+                        len = pDescr[0];
                         break;
                     case 0x22:
                         if(UsbSetupBuf->wValueL == 0){
