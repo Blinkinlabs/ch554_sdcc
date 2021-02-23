@@ -30,9 +30,7 @@
 
 #include <8052.h>
 #include <ch554.h>
-#include <stdio.h>
 #include <stdint.h>
-#include <string.h>
 
 // DAP Firmware Version
 #define DAP_FW_VER "1.2.1"
