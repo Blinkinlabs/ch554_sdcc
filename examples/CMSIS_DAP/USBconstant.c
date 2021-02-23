@@ -98,10 +98,13 @@ __code uint16_t LangDes[]={
 //Product String Descriptor
 __code uint16_t Prod_Des[]={
     0x0300 + sizeof(Prod_Des),  // type and length
-    // u"CH55x CMSIS-DAP"
-    'C','H','5','5','x',' ',
-    'C','M','S','I','S','-','D','A','P'
+
+    // compound literals not supported in SDCC as of v4.0.3
+    // (__code uint16_t[]) { u"CH55x CMSIS-DAP" }
+    'C','H','5','5','x',' ', 'C','M','S','I','S','-','D','A','P'
 };
+
+__sfr __at(sizeof(Prod_Des)) PDLen;
 
 __code uint16_t Manuf_Des[]={
     0x0300 + sizeof(Manuf_Des), // type and length
