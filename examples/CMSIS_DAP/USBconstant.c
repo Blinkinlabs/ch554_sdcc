@@ -104,8 +104,6 @@ __code uint16_t Prod_Des[]={
     'C','H','5','5','x',' ', 'C','M','S','I','S','-','D','A','P'
 };
 
-__sfr __at(sizeof(Prod_Des)) PDLen;
-
 __code uint16_t Manuf_Des[]={
     0x0300 + sizeof(Manuf_Des), // type and length
     'W','C','H'
