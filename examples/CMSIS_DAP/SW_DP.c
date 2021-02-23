@@ -45,7 +45,7 @@ volatile uint8_t swdelay;
 //   count:  sequence bits count
 //   data:   pointer to sequence bits data
 //   return: none
-void SWJ_Sequence(uint8_t count, const uint8_t *data)
+void SWJ_Sequence(uint8_t count, const __xdata uint8_t *data)
 {
     uint8_t val;
     uint8_t n;
@@ -71,7 +71,7 @@ void SWJ_Sequence(uint8_t count, const uint8_t *data)
 //   swdo:   pointer to SWDIO generated data
 //   swdi:   pointer to SWDIO captured data
 //   return: none
-void SWD_Sequence(uint8_t info, const uint8_t *swdo, uint8_t *swdi)
+void SWD_Sequence(uint8_t info, const __xdata uint8_t *swdo, __xdata uint8_t *swdi)
 {
     uint8_t val;
     uint8_t bits;

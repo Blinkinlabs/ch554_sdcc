@@ -244,7 +244,7 @@ extern __idata uint8_t idle_cycles;
 
 extern uint8_t DAP_Thread(__xdata uint8_t* req);
 extern uint8_t SWD_Transfer(uint8_t reqI, __xdata uint8_t *data);
-extern void SWJ_Sequence(uint8_t count, const uint8_t *data);
-extern void SWD_Sequence(uint8_t info, const uint8_t *swdo, uint8_t *swdi);
+extern void SWJ_Sequence(uint8_t count, const __xdata uint8_t *data);
+extern void SWD_Sequence(uint8_t info, const __xdata uint8_t *swdo, __xdata uint8_t *swdi);
 
 #endif /* __DAP_H__ */
