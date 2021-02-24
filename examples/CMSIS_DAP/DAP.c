@@ -31,8 +31,6 @@
 __xdata uint8_t* DAP_RxBuf;
 __xdata uint8_t* DAP_TxBuf;
 
-// TODO: change all uint8_t* to __xdata
-
 // Get DAP Information
 //   id:      info identifier
 //   info:    pointer to info data
@@ -43,38 +41,37 @@ static uint8_t DAP_Info(uint8_t id, __xdata uint8_t *info)
 
     switch (id)
     {
+    /*
     case DAP_ID_VENDOR:
-
         break;
     case DAP_ID_PRODUCT:
-
         break;
     case DAP_ID_SER_NUM:
-
         break;
+    */
     case DAP_ID_FW_VER:
         length = (uint8_t)sizeof(DAP_FW_VER);
         strcpy(info, DAP_FW_VER );
         break;
+    /*
     case DAP_ID_DEVICE_VENDOR:
-
         break;
     case DAP_ID_DEVICE_NAME:
-
         break;
+    */
     case DAP_ID_CAPABILITIES:
         info[0] = DAP_PORT_SWD;
         length = 1U;
         break;
+    /*
     case DAP_ID_TIMESTAMP_CLOCK:
-
         break;
     case DAP_ID_SWO_BUFFER_SIZE:
-
         break;
+    */
     case DAP_ID_PACKET_SIZE:
-        info[0] = (uint8_t)(DAP_PACKET_SIZE >> 0);
-        info[1] = (uint8_t)(DAP_PACKET_SIZE >> 8);
+        info[0] = DAP_PACKET_SIZE;
+        info[1] = 0;
         length = 2U;
         break;
     case DAP_ID_PACKET_COUNT:
@@ -92,6 +89,7 @@ static uint8_t DAP_Info(uint8_t id, __xdata uint8_t *info)
 //   request:  pointer to request data
 //   response: pointer to response data
 //   return:   number of bytes in response
+#if 0
 static uint8_t DAP_Delay(const __xdata uint8_t *req, __xdata uint8_t *res)
 {
     uint16_t delay;
@@ -106,6 +104,7 @@ static uint8_t DAP_Delay(const __xdata uint8_t *req, __xdata uint8_t *res)
     *res = DAP_OK;
     return 1;
 }
+#endif
 
 // Process Host Status command and prepare response
 //   request:  pointer to request data
@@ -113,6 +112,7 @@ static uint8_t DAP_Delay(const __xdata uint8_t *req, __xdata uint8_t *res)
 //   return:   number of bytes in response
 static uint8_t DAP_HostStatus(const __xdata uint8_t *req, __xdata uint8_t *res)
 {
+    *res = DAP_OK;
 
     switch (*req)
     {
@@ -124,10 +124,8 @@ static uint8_t DAP_HostStatus(const __xdata uint8_t *req, __xdata uint8_t *res)
         break;
     default:
         *res = DAP_ERROR;
-        return 1;
     }
 
-    *res = DAP_OK;
     return 1;
 }
 
@@ -170,23 +168,25 @@ static uint8_t DAP_Connect(const __xdata uint8_t *req, __xdata uint8_t *res)
 #define PORT_OFF() PORT_SWD_SETUP()
 static uint8_t DAP_Disconnect(__xdata uint8_t *res)
 {
+    *res = DAP_OK;
 
     debug_port = DAP_PORT_DISABLED;
     PORT_OFF();
 
-    *res = DAP_OK;
     return (1U);
 }
 
 // Process Reset Target command and prepare response
 //   response: pointer to response data
 //   return:   number of bytes in response
+#if 0
 static uint8_t DAP_ResetTarget(__xdata uint8_t *res)
 {
-    *(res + 1) = 0; //RESET_TARGET();
-    *(res + 0) = DAP_OK;
+    *res++ = DAP_OK;
+    *res = 0;                       // target-specific reset unimplmented
     return 2;
 }
+#endif
 
 // Process SWJ Pins command and prepare response
 //   request:  pointer to request data
@@ -301,8 +301,8 @@ static uint8_t DAP_SWJ_Sequence(const __xdata uint8_t *req, __xdata uint8_t *res
     }
 
     SWJ_Sequence(count, req);
-    *res = DAP_OK;
 
+    *res = DAP_OK;
     return 1;
 }
 
@@ -310,6 +310,8 @@ static uint8_t DAP_SWJ_Sequence(const __xdata uint8_t *req, __xdata uint8_t *res
 //   request:  pointer to request data
 //   response: pointer to response data
 //   return:   number of bytes in response
+// turnaround is always 1, dataphase default false
+#if 0
 __idata uint8_t turnaround;
 __idata uint8_t data_phase;
 static uint8_t DAP_SWD_Configure(const __xdata uint8_t *req, __xdata uint8_t *res)
@@ -323,6 +325,7 @@ static uint8_t DAP_SWD_Configure(const __xdata uint8_t *req, __xdata uint8_t *re
     *res = DAP_OK;
     return 1;
 }
+#endif
 
 // Process SWD Sequence command and prepare response
 //   request:  pointer to request data
@@ -858,6 +861,7 @@ static uint8_t DAP_TransferBlock(const __xdata uint8_t *req, __xdata uint8_t *re
 //   request:  pointer to request data
 //   response: pointer to response data
 //   return:   number of bytes in response
+#if 0
 static uint8_t DAP_SWD_WriteAbort(const __xdata uint8_t *req, __xdata uint8_t *res)
 {
     // Load data (Ignore DAP index)
@@ -872,11 +876,14 @@ static uint8_t DAP_SWD_WriteAbort(const __xdata uint8_t *req, __xdata uint8_t *r
     *res = DAP_OK;
     return (1U);
 }
+#endif
 
 // Process Write ABORT command and prepare response
 //   request:  pointer to request data
 //   response: pointer to response data
 //   return:   number of bytes in response
+// unused by pyOCD and openocd - not required in CMSIS-DAP v1?
+#if 0
 static uint8_t DAP_WriteAbort(const __xdata uint8_t *req, __xdata uint8_t *res)
 {
     uint8_t num;
@@ -894,10 +901,12 @@ static uint8_t DAP_WriteAbort(const __xdata uint8_t *req, __xdata uint8_t *res)
     }
     return num;
 }
+#endif
 
 // DAP Thread.
 uint8_t DAP_Thread(uint8_t __xdata *req)
 {
+#define DAP_Res_OK() *res = DAP_OK; num = 1
     uint8_t num;
     uint8_t returnVal = 0;
 
@@ -931,7 +940,8 @@ uint8_t DAP_Thread(uint8_t __xdata *req)
         case ID_DAP_Disconnect:
             num = DAP_Disconnect(res);
             break;
-
+#if 0
+        // DAP_Delay not required in CMSIS-DAP v1
         case ID_DAP_Delay:
             num = DAP_Delay(req, res);
             break;
@@ -939,6 +949,7 @@ uint8_t DAP_Thread(uint8_t __xdata *req)
         case ID_DAP_ResetTarget:
             num = DAP_ResetTarget(res);
             break;
+#endif
 
         case ID_DAP_SWJ_Pins:
             num = DAP_SWJ_Pins(req, res);
@@ -953,7 +964,8 @@ uint8_t DAP_Thread(uint8_t __xdata *req)
             break;
 
         case ID_DAP_SWD_Configure:
-            num = DAP_SWD_Configure(req, res);
+            // no-op
+            DAP_Res_OK();
             break;
 
         case ID_DAP_SWD_Sequence:
@@ -965,7 +977,8 @@ uint8_t DAP_Thread(uint8_t __xdata *req)
             break;
 
         case ID_DAP_WriteABORT:
-            num = DAP_WriteAbort(req, res);
+            // no-op
+            DAP_Res_OK();
             break;
 
         case ID_DAP_ExecuteCommands:

@@ -238,8 +238,7 @@ extern __xdata uint8_t Ep2Buffer[];
 extern __xdata uint8_t* DAP_RxBuf;
 extern __xdata uint8_t* DAP_TxBuf;
 
-extern __idata uint8_t turnaround;
-extern __idata uint8_t data_phase;
+#define data_phase 0
 extern __idata uint8_t idle_cycles;
 
 extern uint8_t DAP_Thread(__xdata uint8_t* req);
