@@ -106,7 +106,7 @@ static uint8_t DAP_Delay(const __xdata uint8_t *req, __xdata uint8_t *res)
 }
 #endif
 
-// Process Host Status command and prepare response
+// Process Host Status AKA DAP_LED command and prepare response
 //   request:  pointer to request data
 //   response: pointer to response data
 //   return:   number of bytes in response
@@ -279,12 +279,14 @@ static uint8_t DAP_SWJ_Pins(const __xdata uint8_t *req, __xdata uint8_t *res)
 //   request:  pointer to request data
 //   response: pointer to response data
 //   return:   number of bytes in response
+#if 0
 static uint8_t DAP_SWJ_Clock(const __xdata uint8_t *req, __xdata uint8_t *res)
 {
     req;
     *res = DAP_OK;
     return 1;
 }
+#endif
 
 // Process SWJ Sequence command and prepare response
 //   request:  pointer to request data
@@ -704,6 +706,7 @@ end:
 //   request:  pointer to request data
 //   response: pointer to response data
 //   return:   number of bytes in response
+#if 0
 static uint8_t DAP_Transfer(const __xdata uint8_t *req, __xdata uint8_t *res)
 {
     uint8_t num = 0;
@@ -720,6 +723,7 @@ static uint8_t DAP_Transfer(const __xdata uint8_t *req, __xdata uint8_t *res)
 
     return (num);
 }
+#endif 
 
 // Process SWD Transfer Block command and prepare response
 //   request:  pointer to request data
@@ -916,7 +920,8 @@ uint8_t DAP_Thread(uint8_t __xdata *req)
         switch (*req++)
         {
         case ID_DAP_Transfer:
-            num = DAP_Transfer(req, res);
+            // num = DAP_Transfer(req, res);
+            num = DAP_SWD_Transfer(req, res);
             break;
 
         case ID_DAP_TransferBlock:
@@ -956,7 +961,8 @@ uint8_t DAP_Thread(uint8_t __xdata *req)
             break;
 
         case ID_DAP_SWJ_Clock:
-            num = DAP_SWJ_Clock(req, res);
+            // no-op
+            DAP_Res_OK();
             break;
 
         case ID_DAP_SWJ_Sequence:
