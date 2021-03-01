@@ -4,10 +4,6 @@
 #include <stdint.h>
 #include <ch554_usb.h>
 
-#define  EP0_ADDR 0
-#define  EP1_ADDR 10
-#define  EP2_ADDR 138
-
 extern __code USB_DEV_DESCR DevDesc;
 extern __code uint8_t CfgDesc[];
 extern __code uint8_t ReportDesc[];

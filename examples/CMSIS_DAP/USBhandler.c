@@ -10,9 +10,9 @@ void USB_EP2_IN();
 void USB_EP1_OUT();
 
 //on page 47 of data sheet, the receive buffer need to be min(possible packet size+2,64)
-__xdata __at (EP0_ADDR) uint8_t  Ep0Buffer[8];
-__xdata __at (EP1_ADDR) uint8_t  Ep1Buffer[128];    // EP1 OUT*2
-__xdata __at (EP2_ADDR) uint8_t  Ep2Buffer[64];
+__xdata uint8_t  Ep0Buffer[DEFAULT_ENDP0_SIZE + 2];
+__xdata uint8_t  Ep1Buffer[128];    // EP1 OUT*2
+__xdata uint8_t  Ep2Buffer[64];
 
 uint8_t SetupLen;
 uint8_t SetupReq,UsbConfig;
@@ -138,7 +138,7 @@ void USB_EP0_Setup(){
                         }
                         len = pDescr[0];
                         break;
-                    case 0x22:
+                    case USB_DESCR_TYP_REPORT:
                         if(UsbSetupBuf->wValueL == 0){
                             pDescr = ReportDesc;
                             len = ReportDescLen;
