@@ -234,33 +234,17 @@ uint8_t SWD_Transfer(uint8_t req, __xdata uint8_t *data)
             }
         }
         SWD = 1;
-        return ((uint8_t)ack);
+        return (ack);
     }
 
     if ((ack == DAP_TRANSFER_WAIT) || (ack == DAP_TRANSFER_FAULT))
     {
-        /* WAIT or FAULT res */
-        if (data_phase && ((req & DAP_TRANSFER_RnW) != 0U))
-        {
-            for (n = 32U + 1U; n; n--)
-            {
-                SW_CLOCK_CYCLE(); /* Dummy Read RDATA[0:31] + Parity */
-            }
-        }
         /* Turnaround */
         SW_CLOCK_CYCLE();
         SWD_OUT_ENABLE();
 
-        if (data_phase && ((req & DAP_TRANSFER_RnW) == 0U))
-        {
-            SWD = 0;
-            for (n = 32U + 1U; n; n--)
-            {
-                SW_CLOCK_CYCLE(); /* Dummy Write WDATA[0:31] + Parity */
-            }
-        }
         SWD = 1;
-        return ((uint8_t)ack);
+        return (ack);
     }
 
     /* Protocol error - clock out 32bits + parity + turnaround */
@@ -271,5 +255,5 @@ uint8_t SWD_Transfer(uint8_t req, __xdata uint8_t *data)
 
     SWD_OUT_ENABLE();
     SWD = 1;
-    return ((uint8_t)ack);
+    return (ack);
 }
