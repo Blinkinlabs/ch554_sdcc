@@ -66,18 +66,33 @@ __code uint8_t CfgDesc[] ={
     USB_ENDP_TYPE_INTER,        // bmAttributes
     0x40, 0x00,                 // wMaxPacketSize
     1,                          // bInterval
-
 };
 __code uint8_t CfgDescLen = sizeof(CfgDesc);
 
+#if 0
+__code struct {
+    USB_CFG_DESCR config;
+} ConfigDescriptor;
+#endif
+
 __code uint8_t ReportDesc[] ={
     0x06, 0x00, 0xFF,   // Usage Page = 0xFF00 (Vendor Defined Page 1)
+    // USB-IF HID tool says vendor usage not required, but Win7 needs it
     0x09, 0x01,         // Usage (Vendor Usage 1)
     0xA1, 0x01,         // Collection (Application)
-    0x75, 0x08,         // Report Size: 8-bit field size
-    0x95, 0x40,         // Report Count: Make sixty-four fields
-    0x81, 0x01,         // Input (Const,Array,Abs,No Wrap,Linear)
-    0x91, 0x01,         // Output (Const,Array,Abs,No Wrap,Linear)
+    0x25, 0x00,         //  Logical minimum
+    0x25, 64,           //  Logical maximum
+    0x75, 0x08,         //  Report Size: 8-bit field size
+    0x95, 64,           //  Report Count: Make 64 fields
+
+    // Input Report
+    0x09, 0x01,         //  Usage (Vendor Usage 1)
+    0x81, 0x02,         //  Input (Data,Var,Abs,No Wrap,Linear)
+
+    // Output Report
+    0x09, 0x01,         //  Usage (Vendor Usage 1)
+    0x91, 0x02,         //  Output (Data,Var,Abs,No Wrap,Linear)
+
     0xC0                // End Collection
 };
 __code uint8_t ReportDescLen = sizeof(ReportDesc);
@@ -106,6 +121,6 @@ __code uint16_t Manuf_Des[]={
 // Serial string descriptor - CMSIS-DAP unique ID
 __code uint16_t Ser_Des[]={
     0x0300 + sizeof(Ser_Des),   // type and length
-    '1','2','3'
+    'N','R'
 };
 
