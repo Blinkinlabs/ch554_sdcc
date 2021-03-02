@@ -29,7 +29,7 @@ __code uint8_t CfgDesc[] ={
     0x01,               /* bConfigurationValue */
     0x00,               /* iConfiguration */
     0x80,               /* bmAttributes */
-    0x64,               /* MaxPower */
+    50,                 /* MaxPower in 2mA units */
     
     // HID interface descriptor
     0x09,                       // bLength

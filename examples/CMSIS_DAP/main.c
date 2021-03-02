@@ -29,12 +29,8 @@ volatile uint8_t EP1_buffs_avail = 2;
 __bit EP1_buf_toggle = 0;
 
 void USBInit(){
-    USBDeviceCfg();                     //Device mode configuration
-    USBDeviceEndPointCfg();             //Endpoint configuration   
-    USBDeviceIntCfg();                  //Interrupt configuration    
-    UEP0_T_LEN = 0;
-    UEP1_T_LEN = 0;
-    UEP2_T_LEN = 0;                                                          
+    USBDeviceSetup();
+
     // single Tx buffer for DAP replies
     DAP_TxBuf = (__xdata uint8_t*) UEP2_DMA;
 }
@@ -65,7 +61,7 @@ void USB_EP1_OUT(){
 
 // perform USB bus reset/disconnect
 // set UDP to GPIO mode and hold low for device disconnect
-inline void resetUSB()
+inline void disconnectUSB()
 {
     PIN_FUNC &= ~(bUSB_IO_EN);
     UDP = 0;
@@ -75,9 +71,10 @@ inline void resetUSB()
 }
 
 void main() {
-    resetUSB();
     CfgFsys(); 
+    disconnectUSB();
     USBInit();
+    LED = 0;
     while (1) {
         uint8_t response_len;
         // process if a DAP packet is received, and TxBuf is empty

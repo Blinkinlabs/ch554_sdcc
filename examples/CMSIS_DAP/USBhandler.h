@@ -13,9 +13,7 @@
 #define EP0_IN_Callback USB_EP0_IN
 
 void USBInterrupt(void);
-void USBDeviceCfg();
-void USBDeviceIntCfg();
-void USBDeviceEndPointCfg();
+void USBDeviceSetup();
 
 #endif
 

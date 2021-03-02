@@ -414,7 +414,7 @@ void USBInterrupt(void) {   //inline not really working in multiple files in SDC
                 break;
         }
         
-        UIF_TRANSFER = 0;                                                     // Clear interrupt flag
+        UIF_TRANSFER = 0;               // Clear interrupt flag
     }
     
     // Device mode USB bus reset
@@ -424,7 +424,7 @@ void USBInterrupt(void) {   //inline not really working in multiple files in SDC
         UEP2_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_ACK;        //Endpoint 2 automatically flips the sync flag, IN transaction returns NAK, OUT returns ACK
         //UEP4_CTRL = UEP_T_RES_NAK | UEP_R_RES_ACK;  //bUEP_AUTO_TOG only work for endpoint 1,2,3
         
-        USB_DEV_AD = 0x00;
+        USB_DEV_AD = 0;
         UIF_SUSPEND = 0;
         UIF_TRANSFER = 0;
         UIF_BUS_RST = 0;                                                        // Clear interrupt flag
@@ -443,31 +443,25 @@ void USBInterrupt(void) {   //inline not really working in multiple files in SDC
 }
 #pragma restore
 
-void USBDeviceCfg()
+void USBDeviceSetup()
 {
-    USB_CTRL = 0x00;                    //Clear USB control register
-    USB_CTRL &= ~bUC_HOST_MODE;         //This bit is the device selection mode
-    USB_CTRL |=  bUC_DEV_PU_EN | bUC_INT_BUSY | bUC_DMA_EN;                    //USB device and internal pull-up enable, automatically return to NAK before interrupt flag is cleared during interrupt
-    USB_DEV_AD = 0x00;                  //Device address initialization
-    UDEV_CTRL &= ~bUD_LOW_SPEED;        //Select full speed 12M mode, default mode
-    UDEV_CTRL = bUD_PD_DIS;             // Disable DP/DM pull-down resistor
-    UDEV_CTRL |= bUD_PORT_EN;           //Enable physical port
-}
+    //USB internal pull-up enable, return NAK if USB INT flag not clear 
+    USB_CTRL = bUC_DEV_PU_EN | bUC_INT_BUSY | bUC_DMA_EN;
 
-void USBDeviceIntCfg()
-{
-    USB_INT_EN |= bUIE_SUSPEND;         //Enable device hang interrupt
+    // enable port, full-speed, disable UDP/UDM pulldown resistor
+    UDEV_CTRL = bUD_PD_DIS | bUD_PORT_EN;
+
+    // configure interrupts
+    // USB_INT_EN |= bUIE_SUSPEND;         //Enable device hang interrupt
     USB_INT_EN |= bUIE_TRANSFER;        //Enable USB transfer completion interrupt
     USB_INT_EN |= bUIE_BUS_RST;         //Enable device mode USB bus reset interrupt
     USB_INT_FG |= 0x1F;                 //Clear interrupt flag
     IE_USB = 1;                         //Enable USB interrupt
     EA = 1;                             //Enable global interrupts
-}
 
-void USBDeviceEndPointCfg()
-{
-    UEP1_DMA = (uint16_t) Ep1Buffer;    //Endpoint 1 data transfer address
-    UEP2_DMA = (uint16_t) Ep2Buffer;    //Endpoint 1 data transfer address
+    // configure endpoints
+    UEP1_DMA = (uint16_t) Ep1Buffer;    //Endpoint data transfer address
+    UEP2_DMA = (uint16_t) Ep2Buffer;    //Endpoint data transfer address
 
     UEP1_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_ACK;        //Endpoint 1 automatically flips the sync flag, IN transaction returns NAK, OUT returns ACK
     UEP2_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_NAK;        //Endpoint 2 automatically flips the sync flag, IN & OUT transaction returns NAK
@@ -476,4 +470,8 @@ void USBDeviceEndPointCfg()
     UEP4_1_MOD = bUEP1_RX_EN;
     UEP2_3_MOD = bUEP2_TX_EN;
     UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;                //Manual flip, OUT transaction returns ACK, IN transaction returns NAK
+
+    UEP0_T_LEN = 0;
+    UEP1_T_LEN = 0;
+    UEP2_T_LEN = 0;                                                          
 }
