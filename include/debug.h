@@ -210,3 +210,14 @@ inline void CH554WDTFeed(uint8_t tim)
    WDOG_COUNT = tim;                                                            // Watchdog counter assignment
 
 }
+
+// perform USB bus reset/disconnect
+// set UDP to GPIO mode and hold low for device disconnect
+inline void disconnectUSB()
+{
+    PIN_FUNC &= ~(bUSB_IO_EN);
+    UDP = 0;
+    mDelaymS(50);
+    UDP = 1;
+    PIN_FUNC |= bUSB_IO_EN;
+}
