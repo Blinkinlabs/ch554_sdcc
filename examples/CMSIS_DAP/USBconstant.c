@@ -138,8 +138,8 @@ __code uint8_t ReportDesc[] ={
     // USB-IF HID tool says vendor usage not required, but Win7 needs it
     0x09, 0x01,         // Usage (Vendor Usage 1)
     0xA1, 0x01,         // Collection (Application)
-    0x25, 0x00,         //  Logical minimum
-    0x25, HID_PKT_SIZ,  //  Logical maximum
+    0x25, 0x00,         //  Logical minimum value 0
+    0x25, 0xFF,         //  Logical maximum value 255
     0x75, 0x08,         //  Report Size: 8-bit field size
     0x95, HID_PKT_SIZ,  //  Report Count: Make 64 fields
 
