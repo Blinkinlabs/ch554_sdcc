@@ -4,6 +4,7 @@
 #include <ch554_usb.h>
 #include "USBhandler.h"
 #include "USBconstant.h"
+#include "config.h"
 
 //HID functions:
 void USB_EP2_IN();
@@ -11,8 +12,8 @@ void USB_EP1_OUT();
 
 //on page 47 of data sheet, the receive buffer need to be min(possible packet size+2,64)
 __xdata uint8_t  Ep0Buffer[DEFAULT_ENDP0_SIZE + 2];
-__xdata uint8_t  Ep1Buffer[128];    // EP1 OUT*2
-__xdata uint8_t  Ep2Buffer[64];
+__xdata uint8_t  Ep1Buffer[HID_PKT_SIZ * 2];    // EP1 OUT*2
+__xdata uint8_t  Ep2Buffer[HID_PKT_SIZ];
 
 uint8_t SetupLen;
 uint8_t SetupReq,UsbConfig;
@@ -119,24 +120,20 @@ void USB_EP0_Setup(){
                         if(UsbSetupBuf->wValueL == 0)
                         {
                             pDescr = LangDes;
-                            // len = LangDesLen;
                         }
                         else if(UsbSetupBuf->wValueL == 1)
                         {
                             pDescr = Manuf_Des;
-                            //len = Manuf_DesLen;
                         }
                         else if(UsbSetupBuf->wValueL == 2)
                         {
                             pDescr = Prod_Des;
-                            //len = Prod_DesLen;
                         }
                         else
                         {
                             pDescr = Ser_Des;
-                            //len = Ser_DesLen;
                         }
-                        len = pDescr[0];
+                        len = pDescr[0];    // bLength
                         break;
                     case USB_DESCR_TYP_REPORT:
                         if(UsbSetupBuf->wValueL == 0){

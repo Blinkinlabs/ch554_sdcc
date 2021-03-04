@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <ch554_usb.h>
-#include "USBconstant.h"
+#include "config.h"
 
 
 //Device descriptor
@@ -23,6 +23,7 @@ __code USB_DEV_DESCR DevDesc = {
     .bNumConfigurations = 1
 };
 
+#if 0
 __code uint8_t CfgDesc[] ={
     0x09,0x02,sizeof(CfgDesc) & 0xff,sizeof(CfgDesc) >> 8,
     0x01,               /* bNumInterfaces */
@@ -67,13 +68,70 @@ __code uint8_t CfgDesc[] ={
     0x40, 0x00,                 // wMaxPacketSize
     1,                          // bInterval
 };
+#endif
+
 __code uint8_t CfgDescLen = sizeof(CfgDesc);
 
-#if 0
 __code struct {
     USB_CFG_DESCR config;
-} ConfigDescriptor;
-#endif
+    USB_ITF_DESCR interface;
+    USB_HID_DESCR hid;
+    USB_ENDP_DESCR ep2IN;
+    USB_ENDP_DESCR ep1OUT;
+} CfgDesc = {
+    .config = {
+        .bLength = sizeof(USB_CFG_DESCR),
+        .bDescriptorType = USB_DESCR_TYP_CONFIG,
+        .wTotalLengthL = sizeof(CfgDesc),
+        .wTotalLengthH = 0,
+        .bNumInterfaces = 1,
+        .bConfigurationValue = 1,
+        .iConfiguration = 0,
+        .bmAttributes = 0x80,
+        .MaxPower = 50                  // 2mA units
+    },
+    .interface = {
+        .bLength = sizeof(USB_ITF_DESCR),
+        .bDescriptorType = USB_DESCR_TYP_INTERF,
+        .bInterfaceNumber = 0,
+        .bAlternateSetting = 0,
+        .bNumEndpoints = 2,
+        .bInterfaceClass = USB_DEV_CLASS_HID,
+        .bInterfaceSubClass = 0,
+        .bInterfaceProtocol = 0,
+        .iInterface = 0,                // no interface string
+
+    },
+    .hid = {
+        .bLength = sizeof(USB_HID_DESCR),
+        .bDescriptorType = USB_DESCR_TYP_HID,
+        .bcdHIDH = 0x01,                // HID class version 
+        .bcdHIDL = 0x10, 
+        .bCountryCode = 0, 
+        .bNumDescriptors = 1,
+        .bDescriptorTypeX = USB_DESCR_TYP_REPORT,
+        .wDescriptorLengthL = sizeof(ReportDesc),
+        .wDescriptorLengthH = 0,
+    },
+    .ep2IN = {
+        .bLength = sizeof(USB_ENDP_DESCR),
+        .bDescriptorType = USB_DESCR_TYP_ENDP,
+        .bEndpointAddress = 0x82,       // EP2 IN
+        .bmAttributes = USB_ENDP_TYPE_INTER,
+        .wMaxPacketSizeL = HID_PKT_SIZ,
+        .wMaxPacketSizeH = 0,
+        .bInterval = 1,                 // poll every 1 ms
+    },
+    .ep1OUT = {
+        .bLength = sizeof(USB_ENDP_DESCR),
+        .bDescriptorType = USB_DESCR_TYP_ENDP,
+        .bEndpointAddress = 0x01,       // EP1 IN
+        .bmAttributes = USB_ENDP_TYPE_INTER,
+        .wMaxPacketSizeL = HID_PKT_SIZ,
+        .wMaxPacketSizeH = 0,
+        .bInterval = 1,                 // poll every 1 ms
+    }
+};
 
 __code uint8_t ReportDesc[] ={
     0x06, 0x00, 0xFF,   // Usage Page = 0xFF00 (Vendor Defined Page 1)
@@ -81,9 +139,9 @@ __code uint8_t ReportDesc[] ={
     0x09, 0x01,         // Usage (Vendor Usage 1)
     0xA1, 0x01,         // Collection (Application)
     0x25, 0x00,         //  Logical minimum
-    0x25, 64,           //  Logical maximum
+    0x25, HID_PKT_SIZ,  //  Logical maximum
     0x75, 0x08,         //  Report Size: 8-bit field size
-    0x95, 64,           //  Report Count: Make 64 fields
+    0x95, HID_PKT_SIZ,  //  Report Count: Make 64 fields
 
     // Input Report
     0x09, 0x01,         //  Usage (Vendor Usage 1)
