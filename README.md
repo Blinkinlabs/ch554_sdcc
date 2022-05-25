@@ -13,6 +13,12 @@ Contains tranlated comments for esier understanding how the ch55x range operate 
 If you want a gentler introduction to CH55x programming, this Arduino port might be worth a look:
 https://github.com/DeqingSun/ch55xduino
 
+WCH has released official english translations of their datasheets for the parts:
+
+* [CH551/CH5522](http://www.wch-ic.com/downloads/file/309.html)
+* [CH554](http://www.wch-ic.com/downloads/file/229.html)
+
+
 # Getting Started
 
 ## Get the toolchain: Windows
