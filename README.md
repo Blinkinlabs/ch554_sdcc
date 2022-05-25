@@ -68,7 +68,7 @@ You'll need xcode (for make), as well as SDCC. ISP Tool will be same as Linux's.
 Then clone this repository, and build the examples:
 
 	git clone https://github.com/Blinkinlabs/ch554_sdcc.git
-	cd ch55x_sdcc/examples
+	cd ch554_sdcc/examples
 	make
 
 If everything is set up correctly, all of the examples should now be built.
