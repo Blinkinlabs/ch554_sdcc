@@ -1,6 +1,6 @@
 TARGET = ws2812
 
-CPU_FREQ = 16000000
+FREQ_SYS = 16000000
 
 C_FILES = \
 	main.c \
