@@ -20,14 +20,14 @@
 * Function Name  : ADCInit(uint8_t div)
 * Description    : ADC sampling clock setting, module is turned on, interrupt is turned on
 * Input          : uint8_t speed clock setting
-                   1 Slow 384 Fosc                   								
-                   0 Fast 96 Fosc									 
+                   0 Slow 384 Fosc
+                   1 Fast  96 Fosc
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void ADCInit(uint8_t speed)
 {
-    ADC_CFG &= ~bADC_CLK | speed;
+    ADC_CFG = (ADC_CFG & ~bADC_CLK) | speed;
     ADC_CFG |= bADC_EN;                                                        //ADC power enable
 #if ADC_INTERRUPT
     ADC_IF = 0;                                                                //Clear interrupt
