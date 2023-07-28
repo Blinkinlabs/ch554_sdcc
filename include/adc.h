@@ -2,7 +2,7 @@
 #ifndef __ADC_H__
 #define __ADC_H__
 
-
+#include <stdint.h>
 
 /*******************************************************************************
 * Function Name  : ADCClkSet(uint8_t div)

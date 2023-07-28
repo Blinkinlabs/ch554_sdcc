@@ -5,6 +5,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "ch554.h"
 
 #ifndef  UART0_BAUD
 #define  UART0_BAUD    9600
