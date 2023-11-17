@@ -11,6 +11,8 @@ Header file for CH554 microcontrollers.
 #ifndef __USB_DEF__
 #define __USB_DEF__
 
+#include <stdint.h>
+
 /*----- USB constant and structure define --------------------------------*/
 
 /* USB PID */

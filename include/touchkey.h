@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <stdint.h>
+
 //#define INTERRUPT_TouchKey   0                                                 //Open TouchKey interrupt mode
 #define KEY_FIRST            0                                                 //Sampling start channel                             
 #define KEY_LAST             3                                                 //End of sampling channel
