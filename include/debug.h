@@ -1,4 +1,3 @@
-ï»¿
 /* Debug */
 /* Provide printf subroutine and delay function */
 
@@ -15,10 +14,46 @@
 #define  UART1_BAUD    9600
 #endif
 
-void	CfgFsys( );                       // CH554 clock selection and configuration
-
 void mDelayuS (uint16_t n); // Delay in units of uS
 void mDelaymS (uint16_t n); // Delay in mS
+
+
+/*******************************************************************************
+* Function Name  : CfgFsys( )
+* Description  : CH554 clock selection and configuration function, Fsys 6MHz is used by default, FREQ_SYS can be passed
+                 CLOCK_CFG configuration, the formula is as follows:
+                 Fsys = (Fosc * 4 / (CLOCK_CFG & MASK_SYS_CK_SEL); the specific clock needs to be configured by yourself
+*******************************************************************************/ 
+inline void CfgFsys( )  
+{
+	SAFE_MOD = 0x55;
+	SAFE_MOD = 0xAA;
+//     CLOCK_CFG |= bOSC_EN_XT;                          // Enable external crystal
+//     CLOCK_CFG & = ~ bOSC_EN_INT;                      // Turn off the internal crystal
+
+#if FREQ_SYS == 32000000
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x07;  // 32MHz
+#elif FREQ_SYS == 24000000
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x06;  // 24MHz	
+#elif FREQ_SYS == 16000000
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x05;  // 16MHz	
+#elif FREQ_SYS == 12000000
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x04;  // 12MHz
+#elif FREQ_SYS == 6000000
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x03;  // 6MHz	
+#elif FREQ_SYS == 3000000
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x02;  // 3MHz	
+#elif FREQ_SYS == 750000
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x01;  // 750KHz	
+#elif FREQ_SYS == 187500
+	CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x00;  // 187.5MHz		
+#else
+	#warning FREQ_SYS invalid or not set
+#endif
+
+	SAFE_MOD = 0x00;
+}
+
 
 /*******************************************************************************
 * Function Name  : CH554UART0Alter()
@@ -40,13 +75,17 @@ inline void	mInitSTDIO( )
     uint32_t x;
     uint8_t x2;
 
-    SM0 = 0;
+    // set UART0 to mode 1: 81N
+    //SM0 = 0;
     SM1 = 1;
-    SM2 = 0;                                                                   //Serial port 0 usage mode 1
-                                                                               //Use Timer1 as a baud rate generator
-    RCLK = 0;                                                                  //UART0 receive clock
-    TCLK = 0;                                                                  //UART0 transmit clock
-    PCON |= SMOD;
+    //SM2 = 0;
+
+    // UART0 receive clock default = T1
+    // RCLK = 0;
+    // UART0 transmit clock default = T1
+    // TCLK = 0;
+
+    PCON = SMOD;
     x = 10 * FREQ_SYS / UART0_BAUD / 16;                                       //If you change the main frequency, be careful not to overflow the value of x
     x2 = x % 10;
     x /= 10;
@@ -54,7 +93,8 @@ inline void	mInitSTDIO( )
 
     TMOD = TMOD & ~ bT1_GATE & ~ bT1_CT & ~ MASK_T1_MOD | bT1_M1;              //0X20, Timer1 as 8-bit auto-reload timer
     T2MOD = T2MOD | bTMR_CLK | bT1_CLK;                                        //Timer1 clock selection
-    TH1 = 0-x;                                                                 //12MHz crystal oscillator, buad / 12 is the actual need to set the baud rate
+    TH1 = 256-x;
+
     TR1 = 1;                                                                   //Start timer 1
     TI = 1;
     REN = 1;                                                                   //Serial 0 receive enable
@@ -131,14 +171,6 @@ inline void CH554UART1SendByte(uint8_t SendDat)
         U1TI = 0;
 }
 
-#if SDCC < 370
-void putchar(char c);
-char getchar();
-#else
-int putchar(int c);
-int getchar(void);
-#endif
-
 /*******************************************************************************
 * Function Name  : CH554WDTModeSelect(uint8_t mode)
 * Description    : CH554 watchdog mode selection
@@ -177,4 +209,15 @@ inline void CH554WDTFeed(uint8_t tim)
 
    WDOG_COUNT = tim;                                                            // Watchdog counter assignment
 
+}
+
+// perform USB bus reset/disconnect
+// set UDP to GPIO mode and hold low for device disconnect
+inline void disconnectUSB()
+{
+    PIN_FUNC &= ~(bUSB_IO_EN);
+    UDP = 0;
+    mDelaymS(50);
+    UDP = 1;
+    PIN_FUNC |= bUSB_IO_EN;
 }

@@ -1,12 +1,11 @@
 /*--------------------------------------------------------------------------
-CH554.H
-Header file for CH554 microcontrollers.
+CH554.H Header file for CH554 microcontrollers.
 ****************************************
 **  Copyright  (C)  W.ch  1999-2014   **
 **  Web:              http://wch.cn   **
 ****************************************
+** 2021 changes Ralph Doncaster http://nerdralph.blogspot.ca/
 --------------------------------------------------------------------------*/
-
 
 #ifndef __USB_DEF__
 #define __USB_DEF__

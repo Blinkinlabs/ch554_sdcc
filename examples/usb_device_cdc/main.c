@@ -19,7 +19,8 @@ __xdata __at (0x0080) uint8_t  Ep2Buffer[2*MAX_PACKET_SIZE];        //Endpoint 2
 
 uint16_t SetupLen;
 uint8_t   SetupReq,Count,UsbConfig;
-const uint8_t *  pDescr;                                                       //USB configuration flag
+const uint8_t *  pDescr;
+
 USB_SETUP_REQ   SetupReqBuf;                                                   //Temporary Setup package
 #define UsbSetupBuf     ((PUSB_SETUP_REQ)Ep0Buffer)
 
@@ -29,10 +30,32 @@ USB_SETUP_REQ   SetupReqBuf;                                                   /
 
 
 /*设备描述符*/
+/*
 __code uint8_t DevDesc[] = {0x12,0x01,0x10,0x01,0x02,0x00,0x00,DEFAULT_ENDP0_SIZE,
                             0x86,0x1a,0x22,0x57,0x00,0x01,0x01,0x02,
                             0x03,0x01
                            };
+*/
+
+// device descriptor
+
+__code USB_DEV_DESCR DevDesc = {
+    .bLength = 18,
+    .bDescriptorType = USB_DESCR_TYP_DEVICE,
+    .bcdUSBH = 0x01, .bcdUSBL = 0x10,
+    .bDeviceClass =  USB_DEV_CLASS_COMMUNIC,
+    .bDeviceSubClass = 0,
+    .bDeviceProtocol = 0,
+    .bMaxPacketSize0 = DEFAULT_ENDP0_SIZE,
+    .idVendorH = 0x1a, .idVendorL = 0x86,
+    .idProductH = 0x57, .idProductL = 0x22,
+    .bcdDeviceH = 0x01, .bcdDeviceL = 0x00,
+    .iManufacturer = 1,                 // string descriptors
+    .iProduct = 2,
+    .iSerialNumber = 0,
+    .bNumConfigurations = 1
+};
+
 __code uint8_t CfgDesc[] ={
     0x09,0x02,0x43,0x00,0x02,0x01,0x00,0xa0,0x32,             //Configuration descriptor (two interfaces)
 // The following is the interface 0 (CDC interface) descriptor
@@ -50,20 +73,35 @@ __code uint8_t CfgDesc[] ={
 };
 /*字符串描述符*/
 unsigned char  __code LangDes[]={0x04,0x03,0x09,0x04};           //Language descriptor
-unsigned char  __code SerDes[]={                                 //Serial number string descriptor
-                                                                 0x14,0x03,
-                                                                 0x32,0x00,0x30,0x00,0x31,0x00,0x37,0x00,0x2D,0x00,
-                                                                 0x32,0x00,0x2D,0x00,
-                                                                 0x32,0x00,0x35,0x00
-                               };
-unsigned char  __code Prod_Des[]={                                //Product string descriptor
+
+/*
+unsigned char  __code Prod_Des[]={
                                                                   0x14,0x03,
                                                                   0x43,0x00,0x48,0x00,0x35,0x00,0x35,0x00,0x34,0x00,0x5F,0x00,
                                                                   0x43,0x00,0x44,0x00,0x43,0x00,
                                  };
+
+*/
+
+#define PDESC_LEN 9
+__code struct {uint8_t bLength; uint8_t bDscType; uint16_t string[PDESC_LEN];} Prod_Des = {
+    .bLength = sizeof(Prod_Des),
+    .bDscType = USB_DESCR_TYP_STRING,
+    .string = u"CH55x_CDC"
+};
+
+/*
 unsigned char  __code Manuf_Des[]={
     0x0A,0x03,
     0x5F,0x6c,0xCF,0x82,0x81,0x6c,0x52,0x60,
+};
+*/
+
+#define MDESC_LEN 3
+__code struct {uint8_t bLength; uint8_t bDscType; uint16_t string[MDESC_LEN];} Manuf_Des = {
+    .bLength = sizeof(Manuf_Des),
+    .bDscType = USB_DESCR_TYP_STRING,
+    .string = u"WCH"
 };
 
 //cdc参数
@@ -138,6 +176,7 @@ void USBDeviceEndPointCfg()
     UEP4_1_MOD = 0X40;                                                         //Endpoint 1 upload buffer; endpoint 0 single 64-byte send and receive buffer
     UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;                                 //Manual flip, OUT transaction returns ACK, IN transaction returns NAK
 }
+
 /*******************************************************************************
 * Function Name  : Config_Uart1(uint8_t *cfg_uart)
 * Description    : Configure serial port 1 parameters
@@ -145,16 +184,20 @@ void USBDeviceEndPointCfg()
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void Config_Uart1(uint8_t *cfg_uart)
+inline void Config_Uart1(uint8_t *cfg_uart)
 {
     uint32_t uart1_buad = 0;
+    // why not: uint32_t uart1_buad = *(uint32_t *)cfg_uart;
     *((uint8_t *)&uart1_buad) = cfg_uart[0];
     *((uint8_t *)&uart1_buad+1) = cfg_uart[1];
     *((uint8_t *)&uart1_buad+2) = cfg_uart[2];
     *((uint8_t *)&uart1_buad+3) = cfg_uart[3];
-    SBAUD1 = 256 - FREQ_SYS/16/uart1_buad; //  SBAUD1 = 256 - Fsys / 16 / baud rate
+
+    //  SBAUD1 = 256 - Fsys / 16 / baud rate, rounded to int
+    SBAUD1 = 256 - ((FREQ_SYS/8/uart1_buad) + 1) /2;
     IE_UART1 = 1;
 }
+
 /*******************************************************************************
 * Function Name  : DeviceInterrupt()
 * Description    : CH559USB interrupt processing function
@@ -220,15 +263,16 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                     case USB_GET_DESCRIPTOR:
                         switch(UsbSetupBuf->wValueH)
                         {
-                        case 1:                                                       //设备描述符
-                            pDescr = DevDesc;                                         //把设备描述符送到要发送的缓冲区
+                        case USB_DESCR_TYP_DEVICE:
+                            //pDescr = DevDesc;
+                            pDescr = (uint8_t *)&DevDesc;
                             len = sizeof(DevDesc);
                             break;
                         case 2:                                                        //配置描述符
                             pDescr = CfgDesc;                                          //把设备描述符送到要发送的缓冲区
                             len = sizeof(CfgDesc);
                             break;
-                        case 3:
+                        case USB_DESCR_TYP_STRING:
                             if(UsbSetupBuf->wValueL == 0)
                             {
                                 pDescr = LangDes;
@@ -236,18 +280,15 @@ void DeviceInterrupt(void) __interrupt (INT_NO_USB)                       //USB 
                             }
                             else if(UsbSetupBuf->wValueL == 1)
                             {
-                                pDescr = Manuf_Des;
+                                //pDescr = Manuf_Des;
+                                pDescr = (uint8_t *)Manuf_Des;
                                 len = sizeof(Manuf_Des);
                             }
                             else if(UsbSetupBuf->wValueL == 2)
                             {
-                                pDescr = Prod_Des;
+                                //pDescr = (uint8_t *)&Prod_Des;
+                                pDescr = (uint8_t *)Prod_Des;
                                 len = sizeof(Prod_Des);
-                            }
-                            else
-                            {
-                                pDescr = SerDes;
-                                len = sizeof(SerDes);
                             }
                             break;
                         default:
@@ -545,6 +586,7 @@ void Uart1_ISR(void) __interrupt (INT_NO_UART1)
     }
 
 }
+
 //主函数
 main()
 {
